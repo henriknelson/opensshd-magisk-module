@@ -1,0 +1,6 @@
+id=openssh-nelshh
+name=OpenSSH for Android
+version=v0.9
+versionCode=7
+author=nelshh
+description=A static build of the latest OpenSSH ssh/sshd/scp binaries for Android (aarch64)

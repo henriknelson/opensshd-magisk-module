@@ -1,0 +1,156 @@
+#!/system/bin/sh
+
+IFS='' read -r -d '' LOGO <<"EOF"
+[38;5;44m [0m[38;5;44m [0m[38;5;43m [0m[38;5;49m_[0m[38;5;49m_[0m[38;5;48m_[0m[38;5;48m_[0m[38;5;83m [0m[38;5;83m [0m[38;5;83m [0m[38;5;118m [0m[38;5;118m [0m[38;5;118m [0m[38;5;154m [0m[38;5;154m [0m[38;5;184m [0m[38;5;184m [0m[38;5;184m [0m[38;5;214m [0m[38;5;214m [0m[38;5;214m [0m[38;5;208m [0m[38;5;208m [0m[38;5;203m [0m[38;5;203m [0m[38;5;203m_[0m[38;5;198m_[0m[38;5;198m_[0m[38;5;199m_[0m[38;5;199m_[0m[38;5;199m_[0m[38;5;164m_[0m[38;5;164m_[0m[38;5;164m_[0m[38;5;129m_[0m[38;5;129m [0m[38;5;93m_[0m[38;5;93m_[0m[38;5;93m [0m[38;5;63m [0m[38;5;63m_[0m[38;5;63m_[0m[38;5;33m_[0m[38;5;33m_[0m[38;5;39m_[0m[38;5;39m_[0m[38;5;38m [0m
+[38;5;49m [0m[38;5;49m [0m[38;5;48m/[0m[38;5;48m [0m[38;5;83m_[0m[38;5;83m_[0m[38;5;83m [0m[38;5;118m\[0m[38;5;118m_[0m[38;5;118m_[0m[38;5;154m_[0m[38;5;154m_[0m[38;5;184m [0m[38;5;184m [0m[38;5;184m_[0m[38;5;214m_[0m[38;5;214m_[0m[38;5;214m [0m[38;5;208m [0m[38;5;208m_[0m[38;5;203m_[0m[38;5;203m_[0m[38;5;203m_[0m[38;5;198m [0m[38;5;198m/[0m[38;5;199m [0m[38;5;199m_[0m[38;5;199m_[0m[38;5;164m_[0m[38;5;164m/[0m[38;5;164m [0m[38;5;129m_[0m[38;5;129m_[0m[38;5;93m_[0m[38;5;93m/[0m[38;5;93m/[0m[38;5;63m [0m[38;5;63m/[0m[38;5;63m [0m[38;5;33m/[0m[38;5;33m [0m[38;5;39m/[0m[38;5;39m [0m[38;5;38m_[0m[38;5;44m_[0m[38;5;44m [0m[38;5;43m\[0m
+[38;5;48m [0m[38;5;83m/[0m[38;5;83m [0m[38;5;83m/[0m[38;5;118m [0m[38;5;118m/[0m[38;5;118m [0m[38;5;154m/[0m[38;5;154m [0m[38;5;184m_[0m[38;5;184m_[0m[38;5;184m [0m[38;5;214m\[0m[38;5;214m/[0m[38;5;214m [0m[38;5;208m_[0m[38;5;208m [0m[38;5;203m\[0m[38;5;203m/[0m[38;5;203m [0m[38;5;198m_[0m[38;5;198m_[0m[38;5;199m [0m[38;5;199m\[0m[38;5;199m\[0m[38;5;164m_[0m[38;5;164m_[0m[38;5;164m [0m[38;5;129m\[0m[38;5;129m\[0m[38;5;93m_[0m[38;5;93m_[0m[38;5;93m [0m[38;5;63m\[0m[38;5;63m/[0m[38;5;63m [0m[38;5;33m/[0m[38;5;33m_[0m[38;5;39m/[0m[38;5;39m [0m[38;5;38m/[0m[38;5;44m [0m[38;5;44m/[0m[38;5;43m [0m[38;5;49m/[0m[38;5;49m [0m[38;5;48m/[0m
+[38;5;83m/[0m[38;5;118m [0m[38;5;118m/[0m[38;5;118m_[0m[38;5;154m/[0m[38;5;154m [0m[38;5;184m/[0m[38;5;184m [0m[38;5;184m/[0m[38;5;214m_[0m[38;5;214m/[0m[38;5;214m [0m[38;5;208m/[0m[38;5;208m [0m[38;5;203m [0m[38;5;203m_[0m[38;5;203m_[0m[38;5;198m/[0m[38;5;198m [0m[38;5;199m/[0m[38;5;199m [0m[38;5;199m/[0m[38;5;164m [0m[38;5;164m/[0m[38;5;164m_[0m[38;5;129m_[0m[38;5;129m/[0m[38;5;93m [0m[38;5;93m/[0m[38;5;93m_[0m[38;5;63m_[0m[38;5;63m/[0m[38;5;63m [0m[38;5;33m/[0m[38;5;33m [0m[38;5;39m_[0m[38;5;39m_[0m[38;5;38m [0m[38;5;44m [0m[38;5;44m/[0m[38;5;43m [0m[38;5;49m/[0m[38;5;49m_[0m[38;5;48m/[0m[38;5;48m [0m[38;5;84m/[0m[38;5;83m [0m
+[38;5;118m\[0m[38;5;154m_[0m[38;5;154m_[0m[38;5;184m_[0m[38;5;184m_[0m[38;5;184m/[0m[38;5;214m [0m[38;5;214m.[0m[38;5;214m_[0m[38;5;208m_[0m[38;5;208m_[0m[38;5;203m/[0m[38;5;203m\[0m[38;5;203m_[0m[38;5;198m_[0m[38;5;198m_[0m[38;5;199m/[0m[38;5;199m_[0m[38;5;199m/[0m[38;5;164m [0m[38;5;164m/[0m[38;5;164m_[0m[38;5;129m/[0m[38;5;129m_[0m[38;5;93m_[0m[38;5;93m_[0m[38;5;93m_[0m[38;5;63m/[0m[38;5;63m_[0m[38;5;63m_[0m[38;5;33m_[0m[38;5;33m_[0m[38;5;39m/[0m[38;5;39m_[0m[38;5;38m/[0m[38;5;44m [0m[38;5;44m/[0m[38;5;43m_[0m[38;5;49m/[0m[38;5;49m_[0m[38;5;48m_[0m[38;5;48m_[0m[38;5;84m_[0m[38;5;83m_[0m[38;5;83m/[0m[38;5;119m [0m[38;5;118m [0m
+[38;5;184m [0m[38;5;184m [0m[38;5;184m [0m[38;5;214m [0m[38;5;214m/[0m[38;5;214m_[0m[38;5;208m/[0m[38;5;208m [0m[38;5;203m [0m[38;5;203m [0m[38;5;203m [0m[38;5;198m [0m[38;5;198m [0m[38;5;199m [0m[38;5;199m [0m[38;5;199m [0m[38;5;164m [0m[38;5;164m [0m[38;5;164m [0m[38;5;129m [0m[38;5;129m [0m[38;5;93m [0m[38;5;93m [0m[38;5;93m [0m[38;5;63m [0m[38;5;63m [0m[38;5;63m [0m[38;5;33m [0m[38;5;33m [0m[38;5;39m [0m[38;5;39m [0m[38;5;38m [0m[38;5;44m [0m[38;5;44m [0m[38;5;43m [0m[38;5;49m [0m[38;5;49m [0m[38;5;48m [0m[38;5;48m [0m[38;5;84m [0m[38;5;83m [0m[38;5;83m [0m[38;5;119m [0m[38;5;118m [0m[38;5;118m [0m[38;5;154m [0m[38;5;154m [0m
+[38;5;178m [0m[38;5;214m [0m[38;5;214m [0m[38;5;208m [0m[38;5;208m [0m[38;5;203m [0m[38;5;203m－[0m[38;5;203m－[0m[38;5;198m－[0m[38;5;198m－[0m[38;5;198m－[0m[38;5;199m－[0m[38;5;199m－[0m[38;5;164m－[0m[38;5;164m－[0m[38;5;164m [0m[38;5;129m [0m[38;5;129mｖ[0m[38;5;129m０[0m[38;5;93m．[0m[38;5;93m９[0m
+EOF
+
+umask 022
+
+CAT=/system/bin/cat
+KILL=/system/bin/kill
+
+BINDIR="$(dirname "$0")"
+
+LIBDIR="$(realpath "$BINDIR/../usr/lib")"
+SYSCONFDIR=/data/ssh
+PIDDIR=/data/ssh
+
+SSHD=/system/bin/sshd
+PIDFILE=$PIDDIR/sshd.pid
+LOGFILE=$PIDDIR/sshd.log
+
+SCRIPT="exec env LD_LIBRARY_PATH=$LIBDIR $SSHD -o PidFile=$PIDFILE -E $LOGFILE"
+
+SSH_KEYGEN=/system/bin/ssh-keygen
+HOST_KEY_DSA=$SYSCONFDIR/ssh_host_dsa_key
+HOST_KEY_RSA=$SYSCONFDIR/ssh_host_rsa_key
+HOST_KEY_ECDSA=$SYSCONFDIR/ssh_host_ecdsa_key
+HOST_KEY_ED25519=$SYSCONFDIR/ssh_host_ed25519_key
+
+check_keys() {
+    if [ ! -f /data/ssh ]; then
+	su -c mkdir -p /data/ssh;
+    fi
+    if [ ! -f $HOST_KEY_DSA ]; then
+	${SSH_KEYGEN} -t dsa -f ${HOST_KEY_DSA} -N ""
+    fi
+    if [ ! -f $HOST_KEY_RSA ]; then
+	${SSH_KEYGEN} -t rsa -f ${HOST_KEY_RSA} -N ""
+    fi
+    if [ ! -f $HOST_KEY_ECDSA ]; then
+	${SSH_KEYGEN} -t ecdsa -f ${HOST_KEY_ECDSA} -N ""
+    fi
+    if [ ! -f $HOST_KEY_ED25519 ]; then
+	${SSH_KEYGEN} -t ed25519 -f ${HOST_KEY_ED25519} -N ""
+    fi
+}
+
+start_service() {
+    # XXX We really should check if the service is already going, but
+    # XXX we will opt out at this time. - Bal
+
+    # Check to see if we have keys that need to be made
+    echo 'Starting SSHD..' >&2
+    check_keys
+
+    if [[ -f "$PIDFILE" ]] && [[ -s "$PIDFILE" ]] && su -c kill -0 `cat "$PIDFILE"`; then
+       echo 'SSHD already running' >&2
+       return 1
+    fi
+
+    su -c mv "$LOGFILE" "$LOGFILE.bak"
+    su -c "$SCRIPT"
+
+    sleep 2
+
+    if [[ -f "$PIDFILE" ]] && [[ -s "$PIDFILE" ]] && su -c kill -0 `cat "$PIDFILE"`; then
+       PID=`cat "$PIDFILE"`
+       echo "SSHD is now running, the PID is $PID"
+       return 0
+    else
+       echo ''
+       echo "Error! Could not start SSHD!"
+    fi
+}
+
+stop_service() {
+  echo 'Stopping SSHD..' >&2
+  if [[ ! -f "$PIDFILE" ]] || ! su -c kill -0 `cat "$PIDFILE"`; then
+    echo 'SSHD is not running' >&2
+    return 1
+  fi
+  su -c kill -15 `cat "$PIDFILE"` && rm -f "$PIDFILE"
+  echo 'SSHD has stopped' >&2
+}
+
+show_status() {
+    echo "Checking SSHD..."
+    if [[ -f "$PIDFILE" ]] && [[ -s "$PIDFILE" ]]; then
+        PID=`cat "$PIDFILE"`
+        PS_OUT="$(su -c ps -Af)"
+	flag=`echo "$PS_OUT" | grep "$PID"`
+	if [[ -z "$flag" ]]; then
+           echo "The SSHD process appears to be dead but pidfile still exists"
+        else
+           echo "SSHD is running, the PID is $PID"
+        fi
+    else
+        echo "SSHD is not running"
+    fi
+}
+
+show_about() {
+	echo "$LOGO"
+	echo " -Compiled by nelshh @ xda-developers"
+	echo " -Contact: henrik@cliffords.nu"
+	echo ""
+}
+
+show_usage() {
+	echo "$LOGO"
+	echo "Compiled by nelshh @ xda-developers"
+	echo ""
+        echo "Usage: opensshd [start|stop|restart|status|about]"
+	echo ""
+        echo "  -start   Start the daemon"
+        echo "  -stop    Stop the daemon"
+        echo "  -restart Restart the daemon"
+        echo "  -status  Show the daemons current status"
+        echo "  -about   Show information about the daemon"
+	echo ""
+        exit 1
+}
+
+case $1 in
+
+'start')
+    start_service
+    ;;
+
+'stop')
+    stop_service
+    ;;
+
+'restart')
+    stop_service
+    start_service
+    ;;
+
+'status')
+    show_status
+    ;;
+
+'about')
+    show_about
+    ;;
+
+*)
+    show_usage
+    ;;
+esac

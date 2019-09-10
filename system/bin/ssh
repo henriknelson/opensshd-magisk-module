@@ -1,0 +1,8 @@
+#!/system/bin/sh
+
+bindir="$(dirname "$0")"
+execname="$(basename "$0")"
+
+libdir="$(realpath "$bindir/../usr/lib")"
+
+exec env LD_LIBRARY_PATH="$libdir" /system/bin/raw/ssh -o UserKnownHostsFile=~/.known_hosts "$@"
