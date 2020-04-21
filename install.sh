@@ -123,8 +123,8 @@ REPLACE="
 
 print_modname() {
   ui_print "*********************************************"
-  ui_print "     OpenSSH for Android                         "
-  ui_print "         - v 0.9                          "
+  ui_print "     OpenSSH for Android                     "
+  ui_print "         - v 8.2p1                           "
   ui_print "         - built by nelshh @ xda-developers  "
   ui_print "*********************************************"
 }
@@ -136,12 +136,13 @@ on_install() {
   mkdir -p /data/ssh
   mkdir -p /data/ssh/root/.ssh
   mkdir -p /data/ssh/shell/.ssh
-  if [ -f /data/ssh/sshd_config ]; then
-    ui_print "[2/7] Found sshd_config, will not copy a default one"
-  else
+  #if [ -f /data/ssh/sshd_config ]; then
+  #  ui_print "[2/7] Found sshd_config, will not copy a default one"
+  #else
     ui_print "[2/7] Extracting sshd_config"
     cp "$MODPATH/custom/sshd_config" '/data/ssh/'
-  fi
+    [[ -f "/data/ssh/sshd.log" ]] || touch /data/ssh/sshd.log;
+  #fi
 
   ui_print "[3/6] Setting permissions..";
 }
@@ -156,15 +157,21 @@ set_permissions() {
   find $MODPATH/system/bin -type f -exec chmod 755 {} \+;
   find $MODPATH/system/bin -type l -exec chmod 755 {} \+;
 
-  ui_print "[4/6] Installing to /system/usr/lib..";
-  chown -R 0:0 $MODPATH/system/usr/lib;
-  chmod -R 755 $MODPATH/system/usr/lib;
+  ui_print "[3/6] Installing to /system/libexec..";
+  chown -R 0:0 $MODPATH/system/libexec;
+  chmod -R 755 $MODPATH/system/libexec;
+  find $MODPATH/system/libexec -type f -exec chmod 755 {} \+;
+  find $MODPATH/system/libexec -type l -exec chmod 755 {} \+;
+
+  ui_print "[4/6] Installing to /system/bin/rawlib..";
+  chown -R 0:0 $MODPATH/system/bin/rawlib;
+  chmod -R 755 $MODPATH/system/bin/rawlib;
   olddir=$(pwd);
-  cd $MODPATH/system/usr/lib;
+  cd $MODPATH/system/bin/rawlib;
   ln -s libcrypto.so.1.0.0 libcrypto.so;
   cd "$oldddir";
-  find $MODPATH/system/usr/lib -type d -exec chmod 755 {} \+;
-  find $MODPATH/system/usr/lib -type f -exec chmod 644 {} \+;
+  find $MODPATH/system/bin/rawlib -type d -exec chmod 755 {} \+;
+  find $MODPATH/system/bin/rawlib -type f -exec chmod 644 {} \+;
 
   set_perm /data/ssh/sshd_config 0 0 0600
   chown shell:shell /data/ssh/shell
@@ -172,6 +179,8 @@ set_permissions() {
   chown root:root /data/ssh/root
   chown root:root /data/ssh/root/.ssh
   chmod 700 /data/ssh/{shell,root}/.ssh
+  chown 0:0 /data/ssh/sshd.log
+  chmod 755 /data/ssh/sshd.log
 
   ui_print "[5/6] Installing to /data/man..";
   mkdir -p /data/man;

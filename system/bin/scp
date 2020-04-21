@@ -3,6 +3,6 @@
 bindir="$(dirname "$0")"
 execname="$(basename "$0")"
 
-libdir="$(realpath "$bindir/../usr/lib")"
+libdir="/system/bin/rawlib:$LD_LIBRARY_PATH"
 
 exec env LD_LIBRARY_PATH="$libdir" /system/bin/raw/scp -o UserKnownHostsFile=~/.known_hosts -S /system/bin/ssh "$@"
