@@ -1,16 +1,11 @@
-MagiskSSH
+OpenSSHD
 =========
 
 This is an SSH server running as root using the great Magisk systemless root suite. It includes binaries for arm, arm64, x86, x86_64, mips and mips64. However, only arm64 has been tested at all. It requires Android API version 23 or higher (Android 6.0 Marshmallow and higher).
 
 ## Included software
 
-* [OpenSSL 1.0.2r](https://www.openssl.org/) (only needed for its libcrypto)
-* [OpenSSH 7.9p1](https://www.openssh.com/)
-* [Rsync 3.1.3](https://rsync.samba.org/)
-* [Magisk Module Installer](https://github.com/topjohnwu/magisk-module-installer)
-
-## Installation
+* [OpenSSH 8.2p1](https://www.openssh.com/)
 
 Download the zip file and install it via the Magisk Manager app. Once this module is available in the Magisk module repository, you can just install it from there.
 
