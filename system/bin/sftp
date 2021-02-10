@@ -1,0 +1,8 @@
+#!/system/bin/sh
+
+bindir="$(dirname "$0")"
+execname="$(basename "$0")"
+
+libdir="/system/bin/rawlib:$LD_LIBRARY_PATH"
+
+exec env LD_LIBRARY_PATH="$libdir" /system/bin/raw/sftp -o UserKnownHostsFile=~/.known_hosts -S /system/bin/ssh "$@"

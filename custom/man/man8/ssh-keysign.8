@@ -1,7 +1,7 @@
-.TH SSH-KEYSIGN 8 "February 17 2016 " ""
+.TH SSH-KEYSIGN 8 "November 30 2019 " ""
 .SH NAME
 \fBssh-keysign\fP
-\- ssh helper program for host-based authentication
+\- OpenSSH helper for host-based authentication
 .SH SYNOPSIS
 .br
 \fBssh-keysign\fP
@@ -15,7 +15,7 @@ required during host-based authentication.
 \fBssh-keysign\fP
 is disabled by default and can only be enabled in the
 global client configuration file
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_config\fP
+\fI/system/etc/ssh/ssh_config\fP
 by setting
 \fBEnableSSHKeysign\fP
 to
@@ -31,19 +31,19 @@ and
 for more information about host-based authentication.
 .SH FILES
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_config
+.B /system/etc/ssh/ssh_config
 Controls whether
 \fBssh-keysign\fP
 is enabled.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_dsa_key
+.B /system/etc/ssh/ssh_host_dsa_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key
+.B /system/etc/ssh/ssh_host_ecdsa_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key
+.B /system/etc/ssh/ssh_host_ed25519_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key
+.B /system/etc/ssh/ssh_host_rsa_key
 These files contain the private parts of the host keys used to
 generate the digital signature.
 They should be owned by root, readable only by root, and not
@@ -53,13 +53,13 @@ Since they are readable only by root,
 must be set-uid root if host-based authentication is used.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_dsa_key-cert.pub
+.B /system/etc/ssh/ssh_host_dsa_key-cert.pub
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key-cert.pub
+.B /system/etc/ssh/ssh_host_ecdsa_key-cert.pub
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key-cert.pub
+.B /system/etc/ssh/ssh_host_ed25519_key-cert.pub
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key-cert.pub
+.B /system/etc/ssh/ssh_host_rsa_key-cert.pub
 If these files exist they are assumed to contain public certificate
 information corresponding with the private keys above.
 .PP

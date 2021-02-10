@@ -1,7 +1,7 @@
-.TH SSHD 8 "July 22 2018 " ""
+.TH SSHD 8 "August 27 2020 " ""
 .SH NAME
 \fBsshd\fP
-\- OpenSSH SSH daemon
+\- OpenSSH daemon
 .SH SYNOPSIS
 .br
 \fBsshd\fP
@@ -119,7 +119,7 @@ Write debug logs to standard error instead of the system log.
 \fB\-f\fP \fIconfig_file\fP
 Specifies the name of the configuration file.
 The default is
-\fI/data/data/com.termux/files/usr/etc/ssh/sshd_config\fP.
+\fI/system/etc/ssh/sshd_config\fP.
 \fBsshd\fP
 refuses to start if there is no configuration file.
 .TP
@@ -137,10 +137,10 @@ This option must be given if
 is not run as root (as the normal
 host key files are normally not readable by anyone but root).
 The default is
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key\fP,
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key\fP
+\fI/system/etc/ssh/ssh_host_ecdsa_key\fP,
+\fI/system/etc/ssh/ssh_host_ed25519_key\fP
 and
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key\fP.
+\fI/system/etc/ssh/ssh_host_rsa_key\fP.
 It is possible to have multiple host key files for
 the different host key algorithms.
 .TP
@@ -231,16 +231,13 @@ Whenever a client connects, the daemon responds with its public
 host key.
 The client compares the
 host key against its own database to verify that it has not changed.
-Forward security is provided through a Diffie-Hellman key agreement.
+Forward secrecy is provided through a Diffie-Hellman key agreement.
 This key agreement results in a shared session key.
-The rest of the session is encrypted using a symmetric cipher, currently
-128-bit AES, Blowfish, 3DES, CAST128, Arcfour, 192-bit AES, or 256-bit AES.
+The rest of the session is encrypted using a symmetric cipher.
 The client selects the encryption algorithm
 to use from those offered by the server.
 Additionally, session integrity is provided
-through a cryptographic message authentication code
-(hmac-md5, hmac-sha1, umac-64, umac-128,
-hmac-sha2-256 or hmac-sha2-512).
+through a cryptographic message authentication code (MAC).
 
 Finally, the server and the client enter an authentication dialog.
 The client tries to authenticate itself using
@@ -333,7 +330,7 @@ exists and the
 \fBsshd_config\fP(5)
 \fBPermitUserRC\fP
 option is set, runs it; else if
-\fI/data/data/com.termux/files/usr/etc/ssh/sshrc\fP
+\fI/system/etc/ssh/sshrc\fP
 exists, runs
 it; otherwise runs xauth.
 The
@@ -396,7 +393,7 @@ fi
 .br
 
 If this file does not exist,
-\fI/data/data/com.termux/files/usr/etc/ssh/sshrc\fP
+\fI/system/etc/ssh/sshrc\fP
 is run, and if that
 does not exist either, xauth is used to add the cookie.
 .SH AUTHORIZED_KEYS FILE FORMAT
@@ -415,25 +412,38 @@ comments).
 Public keys consist of the following space-separated fields:
 options, keytype, base64-encoded key, comment.
 The options field is optional.
-The keytype is
-``ecdsa-sha2-nistp256'',
-``ecdsa-sha2-nistp384'',
-``ecdsa-sha2-nistp521'',
-``ssh-ed25519'',
-``ssh-dss''
-or
-``ssh-rsa ;''
-the comment field is not used for anything (but may be convenient for the
+The supported key types are:
+
+.IP
+sk-ecdsa-sha2-nistp256@openssh.com
+.IP
+ecdsa-sha2-nistp256
+.IP
+ecdsa-sha2-nistp384
+.IP
+ecdsa-sha2-nistp521
+.IP
+sk-ssh-ed25519@openssh.com
+.IP
+ssh-ed25519
+.IP
+ssh-dss
+.IP
+ssh-rsa
+.PP
+
+The comment field is not used for anything (but may be convenient for the
 user to identify the key).
 
 Note that lines in this file can be several hundred bytes long
 (because of the size of the public key encoding) up to a limit of
-8 kilobytes, which permits DSA keys up to 8 kilobits and RSA
-keys up to 16 kilobits.
+8 kilobytes, which permits RSA keys up to 16 kilobits.
 You don't want to type them in; instead, copy the
 \fIid_dsa.pub\fP,
 \fIid_ecdsa.pub\fP,
+\fIid_ecdsa_sk.pub\fP,
 \fIid_ed25519.pub\fP,
+\fIid_ed25519_sk.pub\fP,
 or the
 \fIid_rsa.pub\fP
 file and edit it.
@@ -587,8 +597,8 @@ IPv6 addresses can be specified by enclosing the address in square brackets.
 Multiple
 \fBpermitopen\fP
 options may be applied separated by commas.
-No pattern matching is performed on the specified hostnames,
-they must be literal domains or addresses.
+No pattern matching or name lookup is performed on the
+specified hostnames, they must be literal host names and/or addresses.
 A port specification of
 \fB*\fP
 matches any port.
@@ -614,6 +624,22 @@ option.
 Permits tty allocation previously disabled by the
 \fBrestrict\fP
 option.
+.TP
+\fBno-touch-required\fP
+Do not require demonstration of user presence
+for signatures made using this key.
+This option only makes sense for the FIDO authenticator algorithms
+\fBecdsa-sk\fP
+and
+\fBed25519-sk\fP.
+.TP
+\fBverify-required\fP
+Require that signatures made using this key attest that they verified
+the user, e.g. via a PIN.
+This option only makes sense for the FIDO authenticator algorithms
+\fBecdsa-sk\fP
+and
+\fBed25519-sk\fP.
 .TP
 \fBrestrict\fP
 Enable all restrictions, i.e. disable port, agent and X11 forwarding,
@@ -677,9 +703,13 @@ restrict,pty,command="nethack" ssh-rsa AAAA1f8...IrrC5==
 .br
 user@example.net
 .br
+no-touch-required sk-ecdsa-sha2-nistp256@openssh.com AAAAInN...Ko==
+.br
+user@example.net
+.br
 .SH SSH_KNOWN_HOSTS FILE FORMAT
 The
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts\fP
+\fI/system/etc/ssh/ssh_known_hosts\fP
 and
 \fI~/.ssh/known_hosts\fP
 files contain host public keys for all known hosts.
@@ -746,7 +776,7 @@ negation or wildcard operators may be applied.
 
 The keytype and base64-encoded key are taken directly from the host key; they
 can be obtained, for example, from
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key.pub\fP.
+\fI/system/etc/ssh/ssh_host_rsa_key.pub\fP.
 The optional comment field continues to the end of the line, and is not used.
 
 Lines starting with
@@ -786,7 +816,7 @@ long, and you definitely don't want to type in the host keys by hand.
 Rather, generate them by a script,
 \fBssh-keyscan\fP(1)
 or by taking, for example,
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key.pub\fP
+\fI/system/etc/ssh/ssh_host_rsa_key.pub\fP
 and adding the host names at the front.
 \fBssh-keygen\fP(1)
 also offers some basic automated editing for
@@ -916,7 +946,7 @@ This file is for host-based authentication (see
 It should only be writable by root.
 
 .TP
-.B /data/data/com.termux/files/usr/data/data/com.termux/files/usr/etc/ssh/moduli
+.B /system/system/etc/ssh/moduli
 Contains Diffie-Hellman groups used for the "Diffie-Hellman Group Exchange"
 key exchange method.
 The file format is described in
@@ -940,18 +970,18 @@ refused.
 The file should be world-readable.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/shosts.equiv
+.B /system/etc/ssh/shosts.equiv
 This file is used in exactly the same way as
 \fIhosts.equiv\fP,
 but allows host-based authentication without permitting login with
 rlogin/rsh.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key
+.B /system/etc/ssh/ssh_host_ecdsa_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key
+.B /system/etc/ssh/ssh_host_ed25519_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key
+.B /system/etc/ssh/ssh_host_rsa_key
 These files contain the private parts of the host keys.
 These files should only be owned by root, readable only by root, and not
 accessible to others.
@@ -960,11 +990,11 @@ Note that
 does not start if these files are group/world-accessible.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key.pub
+.B /system/etc/ssh/ssh_host_ecdsa_key.pub
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key.pub
+.B /system/etc/ssh/ssh_host_ed25519_key.pub
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key.pub
+.B /system/etc/ssh/ssh_host_rsa_key.pub
 These files contain the public parts of the host keys.
 These files should be world-readable but writable only by
 root.
@@ -976,7 +1006,7 @@ These files are created using
 \fBssh-keygen\fP(1).
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts
+.B /system/etc/ssh/ssh_known_hosts
 Systemwide list of known host keys.
 This file should be prepared by the
 system administrator to contain the public host keys of all machines in the
@@ -986,14 +1016,14 @@ This file should be writable only by root/the owner and
 should be world-readable.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/sshd_config
+.B /system/etc/ssh/sshd_config
 Contains configuration data for
 \fBsshd\fP.
 The file format and configuration options are described in
 \fBsshd_config\fP(5).
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/sshrc
+.B /system/etc/ssh/sshrc
 Similar to
 \fI~/.ssh/rc\fP,
 it can be used to specify
@@ -1001,7 +1031,7 @@ machine-specific login-time initializations globally.
 This file should be writable only by root, and should be world-readable.
 
 .TP
-.B /data/data/com.termux/files/usr/var/empty
+.B /system/var/empty
 \fBchroot\fP(2)
 directory used by
 \fBsshd\fP
@@ -1010,7 +1040,7 @@ The directory should not contain any files and must be owned by root
 and not group or world-writable.
 
 .TP
-.B /data/data/com.termux/files/usr/var/run/sshd.pid
+.B /system/var/run/sshd.pid
 Contains the process ID of the
 \fBsshd\fP
 listening for connections (if there are several daemons running

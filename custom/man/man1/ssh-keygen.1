@@ -1,34 +1,38 @@
-.TH SSH-KEYGEN 1 "March 5 2019 " ""
+.TH SSH-KEYGEN 1 "September 9 2020 " ""
 .SH NAME
 \fBssh-keygen\fP
-\- authentication key generation, management and conversion
+\- OpenSSH authentication key utility
 .SH SYNOPSIS
 .br
 \fBssh-keygen\fP
 [\fB\-q\fP]
+[\fB\-a\fP \fIrounds\fP]
 [\fB\-b\fP \fIbits\fP]
-[\fB\-t\fP \fBdsa\fP | ecdsa | ed25519 | rsa]
-[\fB\-N\fP \fInew_passphrase\fP]
 [\fB\-C\fP \fIcomment\fP]
 [\fB\-f\fP \fIoutput_keyfile\fP]
 [\fB\-m\fP \fIformat\fP]
+[\fB\-N\fP \fInew_passphrase\fP]
+[\fB\-O\fP \fIoption\fP]
+[\fB\-t\fP \fBdsa\fP | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa]
+[\fB\-w\fP \fIprovider\fP]
 .br
 \fBssh-keygen\fP
 \fB\-p\fP
-[\fB\-P\fP \fIold_passphrase\fP]
-[\fB\-N\fP \fInew_passphrase\fP]
+[\fB\-a\fP \fIrounds\fP]
 [\fB\-f\fP \fIkeyfile\fP]
 [\fB\-m\fP \fIformat\fP]
+[\fB\-N\fP \fInew_passphrase\fP]
+[\fB\-P\fP \fIold_passphrase\fP]
 .br
 \fBssh-keygen\fP
 \fB\-i\fP
-[\fB\-m\fP \fIkey_format\fP]
 [\fB\-f\fP \fIinput_keyfile\fP]
+[\fB\-m\fP \fIkey_format\fP]
 .br
 \fBssh-keygen\fP
 \fB\-e\fP
-[\fB\-m\fP \fIkey_format\fP]
 [\fB\-f\fP \fIinput_keyfile\fP]
+[\fB\-m\fP \fIkey_format\fP]
 .br
 \fBssh-keygen\fP
 \fB\-y\fP
@@ -36,9 +40,10 @@
 .br
 \fBssh-keygen\fP
 \fB\-c\fP
-[\fB\-P\fP \fIpassphrase\fP]
+[\fB\-a\fP \fIrounds\fP]
 [\fB\-C\fP \fIcomment\fP]
 [\fB\-f\fP \fIkeyfile\fP]
+[\fB\-P\fP \fIpassphrase\fP]
 .br
 \fBssh-keygen\fP
 \fB\-l\fP
@@ -55,12 +60,17 @@
 .br
 \fBssh-keygen\fP
 \fB\-F\fP \fIhostname\fP
+[\fB\-lv\fP]
 [\fB\-f\fP \fIknown_hosts_file\fP]
-[\fB\-l\fP]
 .br
 \fBssh-keygen\fP
 \fB\-H\fP
 [\fB\-f\fP \fIknown_hosts_file\fP]
+.br
+\fBssh-keygen\fP
+\fB\-K\fP
+[\fB\-a\fP \fIrounds\fP]
+[\fB\-w\fP \fIprovider\fP]
 .br
 \fBssh-keygen\fP
 \fB\-R\fP \fIhostname\fP
@@ -68,31 +78,24 @@
 .br
 \fBssh-keygen\fP
 \fB\-r\fP \fIhostname\fP
-[\fB\-f\fP \fIinput_keyfile\fP]
 [\fB\-g\fP]
+[\fB\-f\fP \fIinput_keyfile\fP]
 .br
 \fBssh-keygen\fP
-\fB\-G\fP \fIoutput_file\fP
-[\fB\-v\fP]
-[\fB\-b\fP \fIbits\fP]
-[\fB\-M\fP \fImemory\fP]
-[\fB\-S\fP \fIstart_point\fP]
+\fB\-M\fP \fBgenerate\fP
+[\fB\-O\fP \fIoption\fP]
+\fIoutput_file\fP
 .br
 \fBssh-keygen\fP
-\fB\-T\fP \fIoutput_file\fP
-\fB\-f\fP \fIinput_file\fP
-[\fB\-v\fP]
-[\fB\-a\fP \fIrounds\fP]
-[\fB\-J\fP \fInum_lines\fP]
-[\fB\-j\fP \fIstart_line\fP]
-[\fB\-K\fP \fIcheckpt\fP]
-[\fB\-W\fP \fIgenerator\fP]
+\fB\-M\fP \fBscreen\fP
+[\fB\-f\fP \fIinput_file\fP]
+[\fB\-O\fP \fIoption\fP]
+\fIoutput_file\fP
 .br
 \fBssh-keygen\fP
-\fB\-s\fP \fIca_key\fP
 \fB\-I\fP \fIcertificate_identity\fP
-[\fB\-h\fP]
-[\fB\-U\fP]
+\fB\-s\fP \fIca_key\fP
+[\fB\-hU\fP]
 [\fB\-D\fP \fIpkcs11_provider\fP]
 [\fB\-n\fP \fIprincipals\fP]
 [\fB\-O\fP \fIoption\fP]
@@ -106,6 +109,7 @@
 .br
 \fBssh-keygen\fP
 \fB\-A\fP
+[\fB\-a\fP \fIrounds\fP]
 [\fB\-f\fP \fIprefix_path\fP]
 .br
 \fBssh-keygen\fP
@@ -118,8 +122,33 @@
 .br
 \fBssh-keygen\fP
 \fB\-Q\fP
+[\fB\-l\fP]
 \fB\-f\fP \fIkrl_file\fP
 \fIfile ...\fP
+.br
+\fBssh-keygen\fP
+\fB\-Y\fP \fBfind-principals\fP
+\fB\-s\fP \fIsignature_file\fP
+\fB\-f\fP \fIallowed_signers_file\fP
+.br
+\fBssh-keygen\fP
+\fB\-Y\fP \fBcheck-novalidate\fP
+\fB\-n\fP \fInamespace\fP
+\fB\-s\fP \fIsignature_file\fP
+.br
+\fBssh-keygen\fP
+\fB\-Y\fP \fBsign\fP
+\fB\-f\fP \fIkey_file\fP
+\fB\-n\fP \fInamespace\fP
+\fIfile ...\fP
+.br
+\fBssh-keygen\fP
+\fB\-Y\fP \fBverify\fP
+\fB\-f\fP \fIallowed_signers_file\fP
+\fB\-I\fP \fIsigner_identity\fP
+\fB\-n\fP \fInamespace\fP
+\fB\-s\fP \fIsignature_file\fP
+[\fB\-r\fP \fIrevocation_file\fP]
 .SH DESCRIPTION
 \fBssh-keygen\fP
 generates, manages and converts authentication keys for
@@ -154,7 +183,9 @@ with public key authentication runs this once to create the authentication
 key in
 \fI~/.ssh/id_dsa\fP,
 \fI~/.ssh/id_ecdsa\fP,
-\fI~/.ssh/id_ed25519\fP
+\fI~/.ssh/id_ecdsa_sk\fP,
+\fI~/.ssh/id_ed25519\fP,
+\fI~/.ssh/id_ed25519_sk\fP
 or
 \fI~/.ssh/id_rsa\fP.
 Additionally, the system administrator may use this to generate host keys,
@@ -208,7 +239,9 @@ keys may be converted using this option in conjunction with the
 \fB\-p\fP
 (change passphrase) flag.
 
-After a key is generated, instructions below detail where the keys
+After a key is generated,
+\fBssh-keygen\fP
+will ask where the keys
 should be placed to be activated.
 
 The options are as follows:
@@ -227,23 +260,19 @@ This is used by
 to generate new host keys.
 .TP
 \fB\-a\fP \fIrounds\fP
-When saving a private key this option specifies the number of KDF
+When saving a private key, this option specifies the number of KDF
 (key derivation function) rounds used.
 Higher numbers result in slower passphrase verification and increased
 resistance to brute-force password cracking (should the keys be stolen).
-
-When screening DH-GEX candidates (using the
-\fB\-T\fP
-command).
-This option specifies the number of primality tests to perform.
+The default is 16 rounds.
 .TP
 \fB\-B\fP
 Show the bubblebabble digest of specified private or public key file.
 .TP
 \fB\-b\fP \fIbits\fP
 Specifies the number of bits in the key to create.
-For RSA keys, the minimum size is 1024 bits and the default is 2048 bits.
-Generally, 2048 bits is considered sufficient.
+For RSA keys, the minimum size is 1024 bits and the default is 3072 bits.
+Generally, 3072 bits is considered sufficient.
 DSA keys must be exactly 1024 bits as specified by FIPS 186-2.
 For ECDSA keys, the
 \fB\-b\fP
@@ -251,7 +280,7 @@ flag determines the key length by selecting from one of three elliptic
 curve sizes: 256, 384 or 521 bits.
 Attempting to use bit lengths other than these three values for ECDSA keys
 will fail.
-Ed25519 keys have a fixed length and the
+ECDSA-SK, Ed25519 and Ed25519-SK keys have a fixed length and the
 \fB\-b\fP
 flag will be ignored.
 .TP
@@ -306,13 +335,6 @@ option to print found keys in a hashed format.
 \fB\-f\fP \fIfilename\fP
 Specifies the filename of the key file.
 .TP
-\fB\-G\fP \fIoutput_file\fP
-Generate candidate primes for DH-GEX.
-These primes must be screened for
-safety (using the
-\fB\-T\fP
-option) before use.
-.TP
 \fB\-g\fP
 Use generic DNS format when printing fingerprint resource records using the
 \fB\-r\fP
@@ -358,26 +380,12 @@ commercial SSH implementations.
 The default import format is
 ``RFC4716''.
 .TP
-\fB\-J\fP \fInum_lines\fP
-Exit after screening the specified number of lines
-while performing DH candidate screening using the
-\fB\-T\fP
-option.
-.TP
-\fB\-j\fP \fIstart_line\fP
-Start screening at the specified line number
-while performing DH candidate screening using the
-\fB\-T\fP
-option.
-.TP
-\fB\-K\fP \fIcheckpt\fP
-Write the last line processed to the file
-\fIcheckpt\fP
-while performing DH candidate screening using the
-\fB\-T\fP
-option.
-This will be used to skip lines in the input file that have already been
-processed if the job is restarted.
+\fB\-K\fP
+Download resident keys from a FIDO authenticator.
+Public and private key files will be written to the current directory for
+each downloaded key.
+If multiple FIDO authenticators are attached, keys will be downloaded from
+the first touched authenticator.
 .TP
 \fB\-k\fP
 Generate a KRL file.
@@ -404,9 +412,27 @@ If combined with
 a visual ASCII art representation of the key is supplied with the
 fingerprint.
 .TP
-\fB\-M\fP \fImemory\fP
-Specify the amount of memory to use (in megabytes) when generating
-candidate moduli for DH-GEX.
+\fB\-M\fP \fBgenerate\fP
+Generate candidate Diffie-Hellman Group Exchange (DH-GEX) parameters for
+eventual use by the
+`diffie-hellman-group-exchange-*'
+key exchange methods.
+The numbers generated by this operation must be further screened before
+use.
+See the
+.B MODULI GENERATION
+section for more information.
+.TP
+\fB\-M\fP \fBscreen\fP
+Screen candidate parameters for Diffie-Hellman Group Exchange.
+This will accept a list of candidate numbers and test that they are
+safe (Sophie Germain) primes with acceptable group generators.
+The results of this operation may be added to the
+\fI/system/system/etc/ssh/moduli\fP
+file.
+See the
+.B MODULI GENERATION
+section for more information.
 .TP
 \fB\-m\fP \fIkey_format\fP
 Specify a key format for key generation, the
@@ -422,11 +448,12 @@ The supported key formats are:
 ``RFC4716''
 (RFC 4716/SSH2 public or private key),
 ``PKCS8''
-(PEM PKCS8 public key)
+(PKCS8 public or private key)
 or
 ``PEM''
 (PEM public key).
-The default conversion format is
+By default OpenSSH will write newly-generated private keys in its own
+format, but when converting public keys for export the default format is
 ``RFC4716''.
 Setting a format of
 ``PEM''
@@ -445,13 +472,472 @@ Please see the
 section for details.
 .TP
 \fB\-O\fP \fIoption\fP
-Specify a certificate option when signing a key.
-This option may be specified multiple times.
-See also the
-.B CERTIFICATES
-section for further details.
+Specify a key/value option.
+These are specific to the operation that
+\fBssh-keygen\fP
+has been requested to perform.
 
-At present, no standard options are valid for host keys.
+When signing certificates, one of the options listed in the
+.B CERTIFICATES
+section may be specified here.
+
+When performing moduli generation or screening, one of the options
+listed in the
+.B MODULI GENERATION
+section may be specified.
+
+When generating a key that will be hosted on a FIDO authenticator,
+this flag may be used to specify key-specific options.
+Those supported at present are:
+.TP
+\fBapplication\fP
+Override the default FIDO application/origin string of
+``ssh:''.
+This may be useful when generating host or domain-specific resident keys.
+The specified application string must begin with
+``ssh:''.
+.TP
+\fBchallenge\fP=\fIpath\fP
+Specifies a path to a challenge string that will be passed to the
+FIDO token during key generation.
+The challenge string may be used as part of an out-of-band
+protocol for key enrollment
+(a random challenge is used by default).
+.TP
+\fBdevice\fP
+Explicitly specify a
+\fBfido\fP(4)
+device to use, rather than letting the token middleware select one.
+.TP
+\fBno-touch-required\fP
+Indicate that the generated private key should not require touch
+events (user presence) when making signatures.
+Note that
+\fBsshd\fP(8)
+will refuse such signatures by default, unless overridden via
+an authorized_keys option.
+.TP
+\fBresident\fP
+Indicate that the key should be stored on the FIDO authenticator itself.
+Resident keys may be supported on FIDO2 tokens and typically require that
+a PIN be set on the token prior to generation.
+Resident keys may be loaded off the token using
+\fBssh-add\fP(1).
+.TP
+\fBuser\fP
+A username to be associated with a resident key,
+overriding the empty default username.
+Specifying a username may be useful when generating multiple resident keys
+for the same application name.
+.TP
+\fBverify-required\fP
+Indicate that this private key should require user verification for
+each signature.
+Not all FIDO tokens support this option.
+Currently PIN authentication is the only supported verification method,
+but other methods may be supported in the future.
+.TP
+\fBwrite-attestation\fP=\fIpath\fP
+May be used at key generation time to record the attestation data
+returned from FIDO tokens during key generation.
+Please note that this information is potentially sensitive.
+By default, this information is discarded.
+
+The
+\fB\-O\fP
+option may be specified multiple times.
+.TP
+\fB\-P\fP \fIpassphrase\fP
+Provides the (old) passphrase.
+.TP
+\fB\-p\fP
+Requests changing the passphrase of a private key file instead of
+creating a new private key.
+The program will prompt for the file
+containing the private key, for the old passphrase, and twice for the
+new passphrase.
+.TP
+\fB\-Q\fP
+Test whether keys have been revoked in a KRL.
+If the
+\fB\-l\fP
+option is also specified then the contents of the KRL will be printed.
+.TP
+\fB\-q\fP
+Silence
+\fBssh-keygen\fP.
+.TP
+\fB\-R\fP \fIhostname\fP | \fI[hostname]:port\fP
+Removes all keys belonging to the specified
+\fIhostname\fP
+(with optional port number)
+from a
+\fIknown_hosts\fP
+file.
+This option is useful to delete hashed hosts (see the
+\fB\-H\fP
+option above).
+.TP
+\fB\-r\fP \fIhostname\fP
+Print the SSHFP fingerprint resource record named
+\fIhostname\fP
+for the specified public key file.
+.TP
+\fB\-s\fP \fIca_key\fP
+Certify (sign) a public key using the specified CA key.
+Please see the
+.B CERTIFICATES
+section for details.
+
+When generating a KRL,
+\fB\-s\fP
+specifies a path to a CA public key file used to revoke certificates directly
+by key ID or serial number.
+See the
+.B KEY REVOCATION LISTS
+section for details.
+.TP
+\fB\-t\fP \fBdsa\fP | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
+Specifies the type of key to create.
+The possible values are
+``dsa'',
+``ecdsa'',
+``ecdsa-sk'',
+``ed25519'',
+``ed25519-sk'',
+or
+``rsa''.
+
+This flag may also be used to specify the desired signature type when
+signing certificates using an RSA CA key.
+The available RSA signature variants are
+``ssh-rsa''
+(SHA1 signatures, not recommended),
+``rsa-sha2-256'',
+and
+``rsa-sha2-512''
+(the default).
+.TP
+\fB\-U\fP
+When used in combination with
+\fB\-s\fP,
+this option indicates that a CA key resides in a
+\fBssh-agent\fP(1).
+See the
+.B CERTIFICATES
+section for more information.
+.TP
+\fB\-u\fP
+Update a KRL.
+When specified with
+\fB\-k\fP,
+keys listed via the command line are added to the existing KRL rather than
+a new KRL being created.
+.TP
+\fB\-V\fP \fIvalidity_interval\fP
+Specify a validity interval when signing a certificate.
+A validity interval may consist of a single time, indicating that the
+certificate is valid beginning now and expiring at that time, or may consist
+of two times separated by a colon to indicate an explicit time interval.
+
+The start time may be specified as the string
+``always''
+to indicate the certificate has no specified start time,
+a date in YYYYMMDD format, a time in YYYYMMDDHHMM[SS] format,
+a relative time (to the current time) consisting of a minus sign followed by
+an interval in the format described in the
+TIME FORMATS section of
+\fBsshd_config\fP(5).
+
+The end time may be specified as a YYYYMMDD date, a YYYYMMDDHHMM[SS] time,
+a relative time starting with a plus character or the string
+``forever''
+to indicate that the certificate has no expiry date.
+
+For example:
+``+52w1d''
+(valid from now to 52 weeks and one day from now),
+``-4w:+4w''
+(valid from four weeks ago to four weeks from now),
+``20100101123000:20110101123000''
+(valid from 12:30 PM, January 1st, 2010 to 12:30 PM, January 1st, 2011),
+``-1d:20110101''
+(valid from yesterday to midnight, January 1st, 2011).
+``-1m:forever''
+(valid from one minute ago and never expiring).
+.TP
+\fB\-v\fP
+Verbose mode.
+Causes
+\fBssh-keygen\fP
+to print debugging messages about its progress.
+This is helpful for debugging moduli generation.
+Multiple
+\fB\-v\fP
+options increase the verbosity.
+The maximum is 3.
+.TP
+\fB\-w\fP \fIprovider\fP
+Specifies a path to a library that will be used when creating
+FIDO authenticator-hosted keys, overriding the default of using
+the internal USB HID support.
+.TP
+\fB\-Y\fP \fBfind-principals\fP
+Find the principal(s) associated with the public key of a signature,
+provided using the
+\fB\-s\fP
+flag in an authorized signers file provided using the
+\fB\-f\fP
+flag.
+The format of the allowed signers file is documented in the
+.B ALLOWED SIGNERS
+section below.
+If one or more matching principals are found, they are returned on
+standard output.
+.TP
+\fB\-Y\fP \fBcheck-novalidate\fP
+Checks that a signature generated using
+\fBssh-keygen\fP
+\fB\-Y\fP \fBsign\fP
+has a valid structure.
+This does not validate if a signature comes from an authorized signer.
+When testing a signature,
+\fBssh-keygen\fP
+accepts a message on standard input and a signature namespace using
+\fB\-n\fP.
+A file containing the corresponding signature must also be supplied using the
+\fB\-s\fP
+flag.
+Successful testing of the signature is signalled by
+\fBssh-keygen\fP
+returning a zero exit status.
+.TP
+\fB\-Y\fP \fBsign\fP
+Cryptographically sign a file or some data using a SSH key.
+When signing,
+\fBssh-keygen\fP
+accepts zero or more files to sign on the command-line - if no files
+are specified then
+\fBssh-keygen\fP
+will sign data presented on standard input.
+Signatures are written to the path of the input file with
+``.sig''
+appended, or to standard output if the message to be signed was read from
+standard input.
+
+The key used for signing is specified using the
+\fB\-f\fP
+option and may refer to either a private key, or a public key with the private
+half available via
+\fBssh-agent\fP(1).
+An additional signature namespace, used to prevent signature confusion across
+different domains of use (e.g. file signing vs email signing) must be provided
+via the
+\fB\-n\fP
+flag.
+Namespaces are arbitrary strings, and may include:
+``file''
+for file signing,
+``email''
+for email signing.
+For custom uses, it is recommended to use names following a
+NAMESPACE@YOUR.DOMAIN pattern to generate unambiguous namespaces.
+.TP
+\fB\-Y\fP \fBverify\fP
+Request to verify a signature generated using
+\fBssh-keygen\fP
+\fB\-Y\fP \fBsign\fP
+as described above.
+When verifying a signature,
+\fBssh-keygen\fP
+accepts a message on standard input and a signature namespace using
+\fB\-n\fP.
+A file containing the corresponding signature must also be supplied using the
+\fB\-s\fP
+flag, along with the identity of the signer using
+\fB\-I\fP
+and a list of allowed signers via the
+\fB\-f\fP
+flag.
+The format of the allowed signers file is documented in the
+.B ALLOWED SIGNERS
+section below.
+A file containing revoked keys can be passed using the
+\fB\-r\fP
+flag.
+The revocation file may be a KRL or a one-per-line list of public keys.
+Successful verification by an authorized signer is signalled by
+\fBssh-keygen\fP
+returning a zero exit status.
+.TP
+\fB\-y\fP
+This option will read a private
+OpenSSH format file and print an OpenSSH public key to stdout.
+.TP
+\fB\-z\fP \fIserial_number\fP
+Specifies a serial number to be embedded in the certificate to distinguish
+this certificate from others from the same CA.
+If the
+\fIserial_number\fP
+is prefixed with a
+`+'
+character, then the serial number will be incremented for each certificate
+signed on a single command-line.
+The default serial number is zero.
+
+When generating a KRL, the
+\fB\-z\fP
+flag is used to specify a KRL version number.
+.SH MODULI GENERATION
+\fBssh-keygen\fP
+may be used to generate groups for the Diffie-Hellman Group Exchange
+(DH-GEX) protocol.
+Generating these groups is a two-step process: first, candidate
+primes are generated using a fast, but memory intensive process.
+These candidate primes are then tested for suitability (a CPU-intensive
+process).
+
+Generation of primes is performed using the
+\fB\-M\fP \fBgenerate\fP
+option.
+The desired length of the primes may be specified by the
+\fB\-O\fP \fBbits\fP
+option.
+For example:
+
+Dl # ssh-keygen -M generate -O bits=2048 moduli-2048.candidates
+
+By default, the search for primes begins at a random point in the
+desired length range.
+This may be overridden using the
+\fB\-O\fP \fBstart\fP
+option, which specifies a different start point (in hex).
+
+Once a set of candidates have been generated, they must be screened for
+suitability.
+This may be performed using the
+\fB\-M\fP \fBscreen\fP
+option.
+In this mode
+\fBssh-keygen\fP
+will read candidates from standard input (or a file specified using the
+\fB\-f\fP
+option).
+For example:
+
+Dl # ssh-keygen -M screen -f moduli-2048.candidates moduli-2048
+
+By default, each candidate will be subjected to 100 primality tests.
+This may be overridden using the
+\fB\-O\fP \fBprime-tests\fP
+option.
+The DH generator value will be chosen automatically for the
+prime under consideration.
+If a specific generator is desired, it may be requested using the
+\fB\-O\fP \fBgenerator\fP
+option.
+Valid generator values are 2, 3, and 5.
+
+Screened DH groups may be installed in
+\fI/system/system/etc/ssh/moduli\fP.
+It is important that this file contains moduli of a range of bit lengths and
+that both ends of a connection share common moduli.
+
+A number of options are available for moduli generation and screening via the
+\fB\-O\fP
+flag:
+.TP
+\fBlines Ns = Ns \fInumber\fP\fP
+Exit after screening the specified number of lines while performing DH
+candidate screening.
+.TP
+\fBstart-line Ns = Ns \fIline-number\fP\fP
+Start screening at the specified line number while performing DH candidate
+screening.
+.TP
+\fBcheckpoint Ns = Ns \fIfilename\fP\fP
+Write the last line processed to the specified file while performing DH
+candidate screening.
+This will be used to skip lines in the input file that have already been
+processed if the job is restarted.
+.TP
+\fBmemory Ns = Ns \fImbytes\fP\fP
+Specify the amount of memory to use (in megabytes) when generating
+candidate moduli for DH-GEX.
+.TP
+\fBstart Ns = Ns \fIhex-value\fP\fP
+Specify start point (in hex) when generating candidate moduli for DH-GEX.
+.TP
+\fBgenerator Ns = Ns \fIvalue\fP\fP
+Specify desired generator (in decimal) when testing candidate moduli for DH-GEX.
+.SH CERTIFICATES
+\fBssh-keygen\fP
+supports signing of keys to produce certificates that may be used for
+user or host authentication.
+Certificates consist of a public key, some identity information, zero or
+more principal (user or host) names and a set of options that
+are signed by a Certification Authority (CA) key.
+Clients or servers may then trust only the CA key and verify its signature
+on a certificate rather than trusting many user/host keys.
+Note that OpenSSH certificates are a different, and much simpler, format to
+the X.509 certificates used in
+\fBssl\fP(8).
+
+\fBssh-keygen\fP
+supports two types of certificates: user and host.
+User certificates authenticate users to servers, whereas host certificates
+authenticate server hosts to users.
+To generate a user certificate:
+
+Dl $ ssh-keygen -s /path/to/ca_key -I key_id /path/to/user_key.pub
+
+The resultant certificate will be placed in
+\fI/path/to/user_key-cert.pub\fP.
+A host certificate requires the
+\fB\-h\fP
+option:
+
+Dl $ ssh-keygen -s /path/to/ca_key -I key_id -h /path/to/host_key.pub
+
+The host certificate will be output to
+\fI/path/to/host_key-cert.pub\fP.
+
+It is possible to sign using a CA key stored in a PKCS#11 token by
+providing the token library using
+\fB\-D\fP
+and identifying the CA key by providing its public half as an argument
+to
+\fB\-s\fP :
+
+Dl $ ssh-keygen -s ca_key.pub -D libpkcs11.so -I key_id user_key.pub
+
+Similarly, it is possible for the CA key to be hosted in a
+\fBssh-agent\fP(1).
+This is indicated by the
+\fB\-U\fP
+flag and, again, the CA key must be identified by its public half.
+
+Dl $ ssh-keygen -Us ca_key.pub -I key_id user_key.pub
+
+In all cases,
+\fIkey_id\fP
+is a "key identifier" that is logged by the server when the certificate
+is used for authentication.
+
+Certificates may be limited to be valid for a set of principal (user/host)
+names.
+By default, generated certificates are valid for all users or hosts.
+To generate a certificate for a specified set of principals:
+
+Dl $ ssh-keygen -s ca_key -I key_id -n user1,user2 user_key.pub
+Dl "$ ssh-keygen -s ca_key -I key_id -h -n host.domain host_key.pub"
+
+Additional limitations on the validity and use of user certificates may
+be specified through certificate options.
+A certificate option may disable features of the SSH session, may be
+valid only when presented from particular source addresses or may
+force the use of a specific command.
+
 The options that are valid for user certificates are:
 
 .TP
@@ -536,281 +1022,34 @@ by
 Allows X11 forwarding.
 
 .TP
+\fBno-touch-required\fP
+Do not require signatures made using this key include demonstration
+of user presence (e.g. by having the user touch the authenticator).
+This option only makes sense for the FIDO authenticator algorithms
+\fBecdsa-sk\fP
+and
+\fBed25519-sk\fP.
+
+.TP
 \fBsource-address Ns = Ns \fIaddress_list\fP\fP
 Restrict the source addresses from which the certificate is considered valid.
 The
 \fIaddress_list\fP
 is a comma-separated list of one or more address/netmask pairs in CIDR
 format.
+
 .TP
-\fB\-P\fP \fIpassphrase\fP
-Provides the (old) passphrase.
-.TP
-\fB\-p\fP
-Requests changing the passphrase of a private key file instead of
-creating a new private key.
-The program will prompt for the file
-containing the private key, for the old passphrase, and twice for the
-new passphrase.
-.TP
-\fB\-Q\fP
-Test whether keys have been revoked in a KRL.
-.TP
-\fB\-q\fP
-Silence
-\fBssh-keygen\fP.
-.TP
-\fB\-R\fP \fIhostname\fP | \fI[hostname]:port\fP
-Removes all keys belonging to the specified
-\fIhostname\fP
-(with optional port number)
-from a
-\fIknown_hosts\fP
-file.
-This option is useful to delete hashed hosts (see the
-\fB\-H\fP
-option above).
-.TP
-\fB\-r\fP \fIhostname\fP
-Print the SSHFP fingerprint resource record named
-\fIhostname\fP
-for the specified public key file.
-.TP
-\fB\-S\fP \fIstart\fP
-Specify start point (in hex) when generating candidate moduli for DH-GEX.
-.TP
-\fB\-s\fP \fIca_key\fP
-Certify (sign) a public key using the specified CA key.
-Please see the
-.B CERTIFICATES
-section for details.
+\fBverify-required\fP
+Require signatures made using this key indicate that the user was first
+verified.
+This option only makes sense for the FIDO authenticator algorithms
+\fBecdsa-sk\fP
+and
+\fBed25519-sk\fP.
+Currently PIN authentication is the only supported verification method,
+but other methods may be supported in the future.
 
-When generating a KRL,
-\fB\-s\fP
-specifies a path to a CA public key file used to revoke certificates directly
-by key ID or serial number.
-See the
-.B KEY REVOCATION LISTS
-section for details.
-.TP
-\fB\-T\fP \fIoutput_file\fP
-Test DH group exchange candidate primes (generated using the
-\fB\-G\fP
-option) for safety.
-.TP
-\fB\-t\fP \fBdsa\fP | ecdsa | ed25519 | rsa
-Specifies the type of key to create.
-The possible values are
-``dsa'',
-``ecdsa'',
-``ed25519'',
-or
-``rsa''.
-.TP
-\fB\-U\fP
-When used in combination with
-\fB\-s\fP,
-this option indicates that a CA key resides in a
-\fBssh-agent\fP(1).
-See the
-.B CERTIFICATES
-section for more information.
-.TP
-\fB\-u\fP
-Update a KRL.
-When specified with
-\fB\-k\fP,
-keys listed via the command line are added to the existing KRL rather than
-a new KRL being created.
-.TP
-\fB\-V\fP \fIvalidity_interval\fP
-Specify a validity interval when signing a certificate.
-A validity interval may consist of a single time, indicating that the
-certificate is valid beginning now and expiring at that time, or may consist
-of two times separated by a colon to indicate an explicit time interval.
-
-The start time may be specified as the string
-``always''
-to indicate the certificate has no specified start time,
-a date in YYYYMMDD format, a time in YYYYMMDDHHMM[SS] format,
-a relative time (to the current time) consisting of a minus sign followed by
-an interval in the format described in the
-TIME FORMATS section of
-\fBsshd_config\fP(5).
-
-The end time may be specified as a YYYYMMDD date, a YYYYMMDDHHMM[SS] time,
-a relative time starting with a plus character or the string
-``forever''
-to indicate that the certificate has no expirty date.
-
-For example:
-``+52w1d''
-(valid from now to 52 weeks and one day from now),
-``-4w:+4w''
-(valid from four weeks ago to four weeks from now),
-``20100101123000:20110101123000''
-(valid from 12:30 PM, January 1st, 2010 to 12:30 PM, January 1st, 2011),
-``-1d:20110101''
-(valid from yesterday to midnight, January 1st, 2011).
-``-1m:forever''
-(valid from one minute ago and never expiring).
-.TP
-\fB\-v\fP
-Verbose mode.
-Causes
-\fBssh-keygen\fP
-to print debugging messages about its progress.
-This is helpful for debugging moduli generation.
-Multiple
-\fB\-v\fP
-options increase the verbosity.
-The maximum is 3.
-.TP
-\fB\-W\fP \fIgenerator\fP
-Specify desired generator when testing candidate moduli for DH-GEX.
-.TP
-\fB\-y\fP
-This option will read a private
-OpenSSH format file and print an OpenSSH public key to stdout.
-.TP
-\fB\-z\fP \fIserial_number\fP
-Specifies a serial number to be embedded in the certificate to distinguish
-this certificate from others from the same CA.
-If the
-\fIserial_number\fP
-is prefixed with a
-`+'
-character, then the serial number will be incremented for each certificate
-signed on a single command-line.
-The default serial number is zero.
-
-When generating a KRL, the
-\fB\-z\fP
-flag is used to specify a KRL version number.
-.SH MODULI GENERATION
-\fBssh-keygen\fP
-may be used to generate groups for the Diffie-Hellman Group Exchange
-(DH-GEX) protocol.
-Generating these groups is a two-step process: first, candidate
-primes are generated using a fast, but memory intensive process.
-These candidate primes are then tested for suitability (a CPU-intensive
-process).
-
-Generation of primes is performed using the
-\fB\-G\fP
-option.
-The desired length of the primes may be specified by the
-\fB\-b\fP
-option.
-For example:
-
-Dl # ssh-keygen -G moduli-2048.candidates -b 2048
-
-By default, the search for primes begins at a random point in the
-desired length range.
-This may be overridden using the
-\fB\-S\fP
-option, which specifies a different start point (in hex).
-
-Once a set of candidates have been generated, they must be screened for
-suitability.
-This may be performed using the
-\fB\-T\fP
-option.
-In this mode
-\fBssh-keygen\fP
-will read candidates from standard input (or a file specified using the
-\fB\-f\fP
-option).
-For example:
-
-Dl # ssh-keygen -T moduli-2048 -f moduli-2048.candidates
-
-By default, each candidate will be subjected to 100 primality tests.
-This may be overridden using the
-\fB\-a\fP
-option.
-The DH generator value will be chosen automatically for the
-prime under consideration.
-If a specific generator is desired, it may be requested using the
-\fB\-W\fP
-option.
-Valid generator values are 2, 3, and 5.
-
-Screened DH groups may be installed in
-\fI/data/data/com.termux/files/usr/data/data/com.termux/files/usr/etc/ssh/moduli\fP.
-It is important that this file contains moduli of a range of bit lengths and
-that both ends of a connection share common moduli.
-.SH CERTIFICATES
-\fBssh-keygen\fP
-supports signing of keys to produce certificates that may be used for
-user or host authentication.
-Certificates consist of a public key, some identity information, zero or
-more principal (user or host) names and a set of options that
-are signed by a Certification Authority (CA) key.
-Clients or servers may then trust only the CA key and verify its signature
-on a certificate rather than trusting many user/host keys.
-Note that OpenSSH certificates are a different, and much simpler, format to
-the X.509 certificates used in
-\fBssl\fP(8).
-
-\fBssh-keygen\fP
-supports two types of certificates: user and host.
-User certificates authenticate users to servers, whereas host certificates
-authenticate server hosts to users.
-To generate a user certificate:
-
-Dl $ ssh-keygen -s /path/to/ca_key -I key_id /path/to/user_key.pub
-
-The resultant certificate will be placed in
-\fI/path/to/user_key-cert.pub\fP.
-A host certificate requires the
-\fB\-h\fP
-option:
-
-Dl $ ssh-keygen -s /path/to/ca_key -I key_id -h /path/to/host_key.pub
-
-The host certificate will be output to
-\fI/path/to/host_key-cert.pub\fP.
-
-It is possible to sign using a CA key stored in a PKCS#11 token by
-providing the token library using
-\fB\-D\fP
-and identifying the CA key by providing its public half as an argument
-to
-\fB\-s\fP :
-
-Dl $ ssh-keygen -s ca_key.pub -D libpkcs11.so -I key_id user_key.pub
-
-Similarly, it is possible for the CA key to be hosted in a
-\fBssh-agent\fP(1).
-This is indicated by the
-\fB\-U\fP
-flag and, again, the CA key must be identified by its public half.
-
-Dl $ ssh-keygen -Us ca_key.pub -I key_id user_key.pub
-
-In all cases,
-\fIkey_id\fP
-is a "key identifier" that is logged by the server when the certificate
-is used for authentication.
-
-Certificates may be limited to be valid for a set of principal (user/host)
-names.
-By default, generated certificates are valid for all users or hosts.
-To generate a certificate for a specified set of principals:
-
-Dl $ ssh-keygen -s ca_key -I key_id -n user1,user2 user_key.pub
-Dl "$ ssh-keygen -s ca_key -I key_id -h -n host.domain host_key.pub"
-
-Additional limitations on the validity and use of user certificates may
-be specified through certificate options.
-A certificate option may disable features of the SSH session, may be
-valid only when presented from particular source addresses or may
-force the use of a specific command.
-For a list of valid certificate options, see the documentation for the
-\fB\-O\fP
-option above.
+At present, no standard options are valid for host keys.
 
 Finally, certificates may be defined with a validity lifetime.
 The
@@ -912,17 +1151,83 @@ then
 \fBssh-keygen\fP
 will exit with a non-zero exit status.
 A zero exit status will only be returned if no key was revoked.
+.SH ALLOWED SIGNERS
+When verifying signatures,
+\fBssh-keygen\fP
+uses a simple list of identities and keys to determine whether a signature
+comes from an authorized source.
+This "allowed signers" file uses a format patterned after the
+AUTHORIZED_KEYS FILE FORMAT described in
+\fBsshd\fP(8).
+Each line of the file contains the following space-separated fields:
+principals, options, keytype, base64-encoded key.
+Empty lines and lines starting with a
+`#'
+are ignored as comments.
+
+The principals field is a pattern-list (See PATTERNS in
+\fBssh_config\fP(5))
+consisting of one or more comma-separated USER@DOMAIN identity patterns
+that are accepted for signing.
+When verifying, the identity presented via the
+\fB\-I\fP
+option must match a principals pattern in order for the corresponding key to be
+considered acceptable for verification.
+
+The options (if present) consist of comma-separated option specifications.
+No spaces are permitted, except within double quotes.
+The following option specifications are supported (note that option keywords
+are case-insensitive):
+.TP
+\fBcert-authority\fP
+Indicates that this key is accepted as a certificate authority (CA) and
+that certificates signed by this CA may be accepted for verification.
+.TP
+\fBnamespaces="namespace-list"\fP
+Specifies a pattern-list of namespaces that are accepted for this key.
+If this option is present, the signature namespace embedded in the
+signature object and presented on the verification command-line must
+match the specified list before the key will be considered acceptable.
+
+When verifying signatures made by certificates, the expected principal
+name must match both the principals pattern in the allowed signers file and
+the principals embedded in the certificate itself.
+
+An example allowed signers file:
+
+# Comments allowed at start of line
+.br
+user1@example.com,user2@example.com ssh-rsa AAAAX1...
+.br
+# A certificate authority, trusted for all principals in a domain.
+.br
+*@example.com cert-authority ssh-ed25519 AAAB4...
+.br
+# A key that is accepted only for file signing.
+.br
+user2@example.com namespaces="file" ssh-ed25519 AAA41...
+.br
+.SH ENVIRONMENT
+.TP
+.B SSH_SK_PROVIDER
+Specifies a path to a library that will be used when loading any
+FIDO authenticator-hosted keys, overriding the default of using
+the built-in USB HID support.
 .SH FILES
 .TP
 .B ~/.ssh/id_dsa
 .TP
 .B ~/.ssh/id_ecdsa
 .TP
+.B ~/.ssh/id_ecdsa_sk
+.TP
 .B ~/.ssh/id_ed25519
 .TP
+.B ~/.ssh/id_ed25519_sk
+.TP
 .B ~/.ssh/id_rsa
-Contains the DSA, ECDSA, Ed25519 or RSA
-authentication identity of the user.
+Contains the DSA, ECDSA, authenticator-hosted ECDSA, Ed25519,
+authenticator-hosted Ed25519 or RSA authentication identity of the user.
 This file should not be readable by anyone but the user.
 It is possible to
 specify a passphrase when generating the key; that passphrase will be
@@ -938,11 +1243,15 @@ will read this file when a login attempt is made.
 .TP
 .B ~/.ssh/id_ecdsa.pub
 .TP
+.B ~/.ssh/id_ecdsa_sk.pub
+.TP
 .B ~/.ssh/id_ed25519.pub
 .TP
+.B ~/.ssh/id_ed25519_sk.pub
+.TP
 .B ~/.ssh/id_rsa.pub
-Contains the DSA, ECDSA, Ed25519 or RSA
-public key for authentication.
+Contains the DSA, ECDSA, authenticator-hosted ECDSA, Ed25519,
+authenticator-hosted Ed25519 or RSA public key for authentication.
 The contents of this file should be added to
 \fI~/.ssh/authorized_keys\fP
 on all machines
@@ -950,7 +1259,7 @@ where the user wishes to log in using public key authentication.
 There is no need to keep the contents of this file secret.
 
 .TP
-.B /data/data/com.termux/files/usr/data/data/com.termux/files/usr/etc/ssh/moduli
+.B /system/system/etc/ssh/moduli
 Contains Diffie-Hellman groups used for DH-GEX.
 The file format is described in
 \fBmoduli\fP(5).

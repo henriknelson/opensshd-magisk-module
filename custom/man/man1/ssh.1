@@ -1,7 +1,7 @@
-.TH SSH 1 "March 16 2019 " ""
+.TH SSH 1 "July 15 2020 " ""
 .SH NAME
 \fBssh\fP
-\- OpenSSH SSH client (remote login program)
+\- OpenSSH remote login client
 .SH SYNOPSIS
 .br
 \fBssh\fP
@@ -71,7 +71,8 @@ to use IPv6 addresses only.
 
 .TP
 \fB\-A\fP
-Enables forwarding of the authentication agent connection.
+Enables forwarding of connections from an authentication agent such as
+\fBssh-agent\fP(1).
 This can also be specified on a per-host basis in a configuration file.
 
 Agent forwarding should be enabled with caution.
@@ -82,6 +83,9 @@ socket) can access the local agent through the forwarded connection.
 An attacker cannot obtain key material from the agent,
 however they can perform operations on the keys that enable them to
 authenticate using the identities loaded into the agent.
+A safer alternative may be to use a jump host
+(see
+\fB\-J\fP ) .
 
 .TP
 \fB\-a\fP
@@ -190,10 +194,13 @@ disables any escapes and makes the session fully transparent.
 Specifies an alternative per-user configuration file.
 If a configuration file is given on the command line,
 the system-wide configuration file
-(\fI/data/data/com.termux/files/usr/etc/ssh/ssh_config\fP)
+(\fI/system/etc/ssh/ssh_config\fP)
 will be ignored.
 The default for the per-user configuration file is
 \fI~/.ssh/config\fP.
+If set to
+``none'',
+no configuration files will be read.
 
 .TP
 \fB\-f\fP
@@ -249,7 +256,9 @@ public key authentication is read.
 The default is
 \fI~/.ssh/id_dsa\fP,
 \fI~/.ssh/id_ecdsa\fP,
-\fI~/.ssh/id_ed25519\fP
+\fI~/.ssh/id_ecdsa_sk\fP,
+\fI~/.ssh/id_ed25519\fP,
+\fI~/.ssh/id_ed25519_sk\fP
 and
 \fI~/.ssh/id_rsa\fP.
 Identity files may also be specified on
@@ -509,7 +518,7 @@ HostKeyAlgorithms
 .TP
 HostKeyAlias
 .TP
-HostName
+Hostname
 .TP
 IdentitiesOnly
 .TP
@@ -629,10 +638,18 @@ flag),
 (certificate key types),
 \fIkey-plain\fP
 (non-certificate key types),
+\fIkey-sig\fP
+(all key types and signature algorithms),
 \fIprotocol-version\fP
 (supported SSH protocol versions), and
 \fIsig\fP
 (supported signature algorithms).
+Alternatively, any keyword from
+\fBssh_config\fP(5)
+or
+\fBsshd_config\fP(5)
+that takes an algorithm list may be used as an alias for the corresponding
+query_option.
 
 .TP
 \fB\-q\fP
@@ -867,8 +884,8 @@ Host-based authentication works as follows:
 If the machine the user logs in from is listed in
 \fI/etc/hosts.equiv\fP
 or
-\fI/data/data/com.termux/files/usr/etc/ssh/shosts.equiv\fP
-on the remote machine, and the user names are
+\fI/system/etc/ssh/shosts.equiv\fP
+on the remote machine, the user is non-root and the user names are
 the same on both sides, or if the files
 \fI~/.rhosts\fP
 or
@@ -881,7 +898,7 @@ Additionally, the server
 .IR must
 be able to verify the client's
 host key (see the description of
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts\fP
+\fI/system/etc/ssh/ssh_known_hosts\fP
 and
 \fI~/.ssh/known_hosts\fP,
 below)
@@ -938,8 +955,12 @@ This stores the private key in
 (DSA),
 \fI~/.ssh/id_ecdsa\fP
 (ECDSA),
+\fI~/.ssh/id_ecdsa_sk\fP
+(authenticator-hosted ECDSA),
 \fI~/.ssh/id_ed25519\fP
 (Ed25519),
+\fI~/.ssh/id_ed25519_sk\fP
+(authenticator-hosted Ed25519),
 or
 \fI~/.ssh/id_rsa\fP
 (RSA)
@@ -948,8 +969,12 @@ and stores the public key in
 (DSA),
 \fI~/.ssh/id_ecdsa.pub\fP
 (ECDSA),
+\fI~/.ssh/id_ecdsa_sk.pub\fP
+(authenticator-hosted ECDSA),
 \fI~/.ssh/id_ed25519.pub\fP
 (Ed25519),
+\fI~/.ssh/id_ed25519_sk.pub\fP
+(authenticator-hosted Ed25519),
 or
 \fI~/.ssh/id_rsa.pub\fP
 (RSA)
@@ -1012,7 +1037,7 @@ Host keys are stored in
 \fI~/.ssh/known_hosts\fP
 in the user's home directory.
 Additionally, the file
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts\fP
+\fI/system/etc/ssh/ssh_known_hosts\fP
 is automatically checked for known hosts.
 Any new hosts are automatically added to the user's file.
 If a host's identification ever changes,
@@ -1241,7 +1266,7 @@ has been disabled).
 Fingerprints can be determined using
 \fBssh-keygen\fP(1):
 
-Dl $ ssh-keygen -l -f /data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key
+Dl $ ssh-keygen -l -f /system/etc/ssh/ssh_host_rsa_key
 
 If the fingerprint is already known, it can be matched
 and the key can be accepted or rejected.
@@ -1442,6 +1467,26 @@ may be necessary to redirect the input from
 \fI/dev/null\fP
 to make this work.)
 .TP
+.B SSH_ASKPASS_REQUIRE
+Allows further control over the use of an askpass program.
+If this variable is set to
+``never''
+then
+\fBssh\fP
+will never attempt to use one.
+If it is set to
+``prefer'',
+then
+\fBssh\fP
+will prefer to use the askpass program instead of the TTY when requesting
+passwords.
+Finally, if the variable is set to
+``force'',
+then the askpass program will be used for all passphrase input regardless
+of whether
+.IR DISPLAY
+is set.
+.TP
 .B SSH_AUTH_SOCK
 Identifies the path of a
 UNIX-domain
@@ -1556,7 +1601,11 @@ above.
 .TP
 .B ~/.ssh/id_ecdsa
 .TP
+.B ~/.ssh/id_ecdsa_sk
+.TP
 .B ~/.ssh/id_ed25519
+.TP
+.B ~/.ssh/id_ed25519_sk
 .TP
 .B ~/.ssh/id_rsa
 Contains the private key for authentication.
@@ -1574,7 +1623,11 @@ sensitive part of this file using AES-128.
 .TP
 .B ~/.ssh/id_ecdsa.pub
 .TP
+.B ~/.ssh/id_ecdsa_sk.pub
+.TP
 .B ~/.ssh/id_ed25519.pub
+.TP
+.B ~/.ssh/id_ed25519_sk.pub
 .TP
 .B ~/.ssh/id_rsa.pub
 Contains the public key for authentication.
@@ -1605,33 +1658,33 @@ This file is for host-based authentication (see above).
 It should only be writable by root.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/shosts.equiv
+.B /system/etc/ssh/shosts.equiv
 This file is used in exactly the same way as
 \fIhosts.equiv\fP,
 but allows host-based authentication without permitting login with
 rlogin/rsh.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_config
+.B /system/etc/ssh/ssh_config
 Systemwide configuration file.
 The file format and configuration options are described in
 \fBssh_config\fP(5).
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_key
+.B /system/etc/ssh/ssh_host_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_dsa_key
+.B /system/etc/ssh/ssh_host_dsa_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key
+.B /system/etc/ssh/ssh_host_ecdsa_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key
+.B /system/etc/ssh/ssh_host_ed25519_key
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key
+.B /system/etc/ssh/ssh_host_rsa_key
 These files contain the private parts of the host keys
 and are used for host-based authentication.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts
+.B /system/etc/ssh/ssh_known_hosts
 Systemwide list of known host keys.
 This file should be prepared by the
 system administrator to contain the public host keys of all machines in the
@@ -1642,7 +1695,7 @@ See
 for further details of the format of this file.
 
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/sshrc
+.B /system/etc/ssh/sshrc
 Commands in this file are executed by
 \fBssh\fP
 when the user logs in, just before the user's shell (or command) is started.

@@ -1,11 +1,11 @@
-.TH SCP 1 "January 26 2019 " ""
+.TH SCP 1 "August 3 2020 " ""
 .SH NAME
 \fBscp\fP
-\- secure copy (remote file copy program)
+\- OpenSSH secure file copy
 .SH SYNOPSIS
 .br
 \fBscp\fP
-[\fB\-346BCpqrTv\fP]
+[\fB\-346ABCpqrTv\fP]
 [\fB\-c\fP \fIcipher\fP]
 [\fB\-F\fP \fIssh_config\fP]
 [\fB\-i\fP \fIidentity_file\fP]
@@ -57,7 +57,10 @@ The options are as follows:
 Copies between two remote hosts are transferred through the local host.
 Without this option the data is copied directly between the two remote
 hosts.
-Note that this option disables the progress meter.
+Note that this option disables the progress meter and selects batch mode
+for the second host, since
+\fBscp\fP
+cannot ask for passwords or passphrases for both hosts.
 .TP
 \fB\-4\fP
 Forces
@@ -68,6 +71,12 @@ to use IPv4 addresses only.
 Forces
 \fBscp\fP
 to use IPv6 addresses only.
+.TP
+\fB\-A\fP
+Allows forwarding of
+\fBssh-agent\fP(1)
+to the remote system.
+The default is not to forward an authentication agent.
 .TP
 \fB\-B\fP
 Selects batch mode (prevents asking for passwords or passphrases).
@@ -186,7 +195,7 @@ HostKeyAlgorithms
 .TP
 HostKeyAlias
 .TP
-HostName
+Hostname
 .TP
 IdentitiesOnly
 .TP

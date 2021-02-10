@@ -1,7 +1,7 @@
-.TH SSH_CONFIG 5 "March 1 2019 " ""
+.TH SSH_CONFIG 5 "August 11 2020 " ""
 .SH NAME
 \fBssh_config\fP
-\- OpenSSH SSH client configuration files
+\- OpenSSH client configuration file
 .SH DESCRIPTION
 \fBssh\fP(1)
 obtains configuration data from the following sources in
@@ -14,7 +14,7 @@ user's configuration file
 (\fI~/.ssh/config\fP)
 .IP 3.
 system-wide configuration file
-(\fI/data/data/com.termux/files/usr/etc/ssh/ssh_config\fP)
+(\fI/system/etc/ssh/ssh_config\fP)
 .PP
 
 For each parameter, the first obtained value
@@ -208,13 +208,22 @@ option was specified to
 If this option is set to
 \fBno\fP,
 no keys are added to the agent.
+Alternately, this option may be specified as a time interval
+using the format described in the
+.B TIME FORMATS
+section of
+\fBsshd_config\fP(5)
+to specify the key's lifetime in
+\fBssh-agent\fP(1),
+after which it will automatically be removed.
 The argument must be
-\fByes\fP,
-\fBconfirm\fP,
-\fBask\fP,
-or
 \fBno\fP
-(the default).
+(the default),
+\fByes\fP,
+\fBconfirm\fP
+(optionally followed by a time interval),
+\fBask\fP
+or a time interval.
 .TP
 \fBAddressFamily\fP
 Specifies which address family to use when connecting.
@@ -229,9 +238,11 @@ Valid arguments are
 \fBBatchMode\fP
 If set to
 \fByes\fP,
-passphrase/password querying will be disabled.
+user interaction such as password prompts and host key confirmation requests
+will be disabled.
 This option is useful in scripts and other batch jobs where no user
-is present to supply the password.
+is present to interact with
+\fBssh\fP(1).
 The argument must be
 \fByes\fP
 or
@@ -334,7 +345,7 @@ Specifies which algorithms are allowed for signing of certificates
 by certificate authorities (CAs).
 The default is:
 
-ecdsa-sha2-nistp256.ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
 ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
@@ -356,13 +367,17 @@ flag to
 via
 \fBssh-agent\fP(1),
 or via a
-\fBPKCS11Provider\fP.
+\fBPKCS11Provider\fP
+or
+\fBSecurityKeyProvider\fP.
 
 Arguments to
 \fBCertificateFile\fP
-may use the tilde syntax to refer to a user's home directory
-or the tokens described in the
+may use the tilde syntax to refer to a user's home directory,
+the tokens described in the
 .B TOKENS
+section and environment variables as described in the
+.B ENVIRONMENT VARIABLES
 section.
 
 It is possible to have multiple certificate files specified in
@@ -400,14 +415,18 @@ the check will not be executed.
 \fBCiphers\fP
 Specifies the ciphers allowed and their order of preference.
 Multiple ciphers must be comma-separated.
-If the specified value begins with a
+If the specified list begins with a
 `+'
 character, then the specified ciphers will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified ciphers (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified ciphers will be placed at the head of the
+default set.
 
 The supported ciphers are:
 
@@ -478,8 +497,8 @@ The default is 1.
 \fBConnectTimeout\fP
 Specifies the timeout (in seconds) used when connecting to the
 SSH server, instead of using the default system TCP timeout.
-This value is used only when the target is down or really unreachable,
-not when it refuses the connection.
+This timeout is applied both to establishing the connection and to performing
+the initial SSH protocol handshake and key exchange.
 .TP
 \fBControlMaster\fP
 Enables the sharing of multiple sessions over a single network connection.
@@ -538,9 +557,11 @@ section above or the string
 to disable connection sharing.
 Arguments to
 \fBControlPath\fP
-may use the tilde syntax to refer to a user's home directory
-or the tokens described in the
+may use the tilde syntax to refer to a user's home directory,
+the tokens described in the
 .B TOKENS
+section and environment variables as described in the
+.B ENVIRONMENT VARIABLES
 section.
 It is recommended that any
 \fBControlPath\fP
@@ -556,7 +577,8 @@ specifies that the master connection should remain open
 in the background (waiting for future client connections)
 after the initial client connection has been closed.
 If set to
-\fBno\fP,
+\fBno\fP
+(the default),
 then the master connection will not be placed into the background,
 and will close as soon as the initial client connection is closed.
 If set to
@@ -606,7 +628,7 @@ Only the superuser can forward privileged ports.
 Setting this option to
 \fByes\fP
 in the global client configuration file
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_config\fP
+\fI/system/etc/ssh/ssh_config\fP
 enables the use of the helper program
 \fBssh-keysign\fP(8)
 during
@@ -663,11 +685,14 @@ and
 \fBForwardAgent\fP
 Specifies whether the connection to the authentication agent (if any)
 will be forwarded to the remote machine.
-The argument must be
-\fByes\fP
-or
+The argument may be
+\fByes\fP,
 \fBno\fP
-(the default).
+(the default),
+an explicit path to an agent socket or the name of an environment variable
+(beginning with
+`$' )
+in which to find the path.
 
 Agent forwarding should be enabled with caution.
 Users with the ability to bypass file permissions on the remote host
@@ -753,8 +778,8 @@ or
 Specifies one or more files to use for the global
 host key database, separated by whitespace.
 The default is
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts\fP,
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts2\fP.
+\fI/system/etc/ssh/ssh_known_hosts\fP,
+\fI/system/etc/ssh/ssh_known_hosts2\fP.
 .TP
 \fBGSSAPIAuthentication\fP
 Specifies whether user authentication based on GSSAPI is allowed.
@@ -775,8 +800,8 @@ These hashed names may be used normally by
 \fBssh\fP(1)
 and
 \fBsshd\fP(8),
-but they do not reveal identifying information should the file's contents
-be disclosed.
+but they do not visually reveal identifying information if the
+file's contents are disclosed.
 The default is
 \fBno\fP.
 Note that existing names and addresses in known hosts files
@@ -796,14 +821,18 @@ or
 \fBHostbasedKeyTypes\fP
 Specifies the key types that will be used for hostbased authentication
 as a comma-separated list of patterns.
-Alternately if the specified value begins with a
+Alternately if the specified list begins with a
 `+'
 character, then the specified key types will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified key types (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified key types will be placed at the head of the
+default set.
 The default for this option is:
 
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
@@ -812,15 +841,25 @@ ecdsa-sha2-nistp384-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
 .br
+sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+.br
 ssh-ed25519-cert-v01@openssh.com,
 .br
-rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,
+sk-ssh-ed25519-cert-v01@openssh.com,
+.br
+rsa-sha2-512-cert-v01@openssh.com,
+.br
+rsa-sha2-256-cert-v01@openssh.com,
 .br
 ssh-rsa-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
-ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
+sk-ecdsa-sha2-nistp256@openssh.com,
+.br
+ssh-ed25519,sk-ssh-ed25519@openssh.com,
+.br
+rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
 
 The
@@ -832,14 +871,18 @@ may be used to list supported key types.
 \fBHostKeyAlgorithms\fP
 Specifies the host key algorithms
 that the client wants to use in order of preference.
-Alternately if the specified value begins with a
+Alternately if the specified list begins with a
 `+'
 character, then the specified key types will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified key types (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified key types will be placed at the head of the
+default set.
 The default for this option is:
 
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
@@ -848,22 +891,32 @@ ecdsa-sha2-nistp384-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
 .br
+sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+.br
 ssh-ed25519-cert-v01@openssh.com,
 .br
-rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,
+sk-ssh-ed25519-cert-v01@openssh.com,
+.br
+rsa-sha2-512-cert-v01@openssh.com,
+.br
+rsa-sha2-256-cert-v01@openssh.com,
 .br
 ssh-rsa-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
-ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
+sk-ecdsa-sha2-nistp256@openssh.com,
+.br
+ssh-ed25519,sk-ssh-ed25519@openssh.com,
+.br
+rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
 
 If hostkeys are known for the destination host then this default is modified
 to prefer their algorithms.
 
 The list of available key types may also be obtained using
-Qq ssh -Q key .
+Qq ssh -Q HostKeyAlgorithms .
 .TP
 \fBHostKeyAlias\fP
 Specifies an alias that should be used instead of the
@@ -872,33 +925,35 @@ in the host key database files and when validating host certificates.
 This option is useful for tunneling SSH connections
 or for multiple servers running on a single host.
 .TP
-\fBHostName\fP
+\fBHostname\fP
 Specifies the real host name to log into.
 This can be used to specify nicknames or abbreviations for hosts.
 Arguments to
-\fBHostName\fP
+\fBHostname\fP
 accept the tokens described in the
 .B TOKENS
 section.
 Numeric IP addresses are also permitted (both on the command line and in
-\fBHostName\fP
+\fBHostname\fP
 specifications).
 The default is the name given on the command line.
 .TP
 \fBIdentitiesOnly\fP
 Specifies that
 \fBssh\fP(1)
-should only use the authentication identity and certificate files explicitly
-configured in the
+should only use the configured authentication identity and certificate files
+(either the default files, or those explicitly configured in the
 \fBssh_config\fP
 files
 or passed on the
 \fBssh\fP(1)
-command-line,
+command-line),
 even if
 \fBssh-agent\fP(1)
 or a
 \fBPKCS11Provider\fP
+or
+\fBSecurityKeyProvider\fP
 offers more identities.
 The argument to this keyword must be
 \fByes\fP
@@ -931,18 +986,22 @@ the location of the socket.
 
 Arguments to
 \fBIdentityAgent\fP
-may use the tilde syntax to refer to a user's home directory
-or the tokens described in the
+may use the tilde syntax to refer to a user's home directory,
+the tokens described in the
 .B TOKENS
+section and environment variables as described in the
+.B ENVIRONMENT VARIABLES
 section.
 .TP
 \fBIdentityFile\fP
-Specifies a file from which the user's DSA, ECDSA, Ed25519 or RSA authentication
-identity is read.
+Specifies a file from which the user's DSA, ECDSA, authenticator-hosted ECDSA,
+Ed25519, authenticator-hosted Ed25519 or RSA authentication identity is read.
 The default is
 \fI~/.ssh/id_dsa\fP,
 \fI~/.ssh/id_ecdsa\fP,
-\fI~/.ssh/id_ed25519\fP
+\fI~/.ssh/id_ecdsa_sk\fP,
+\fI~/.ssh/id_ed25519\fP,
+\fI~/.ssh/id_ed25519_sk\fP
 and
 \fI~/.ssh/id_rsa\fP.
 Additionally, any identities represented by the authentication agent
@@ -1002,6 +1061,7 @@ Multiple pathnames may be specified and each pathname may contain
 wildcards and, for user configurations, shell-like
 `~'
 references to user home directories.
+Wildcards will be expanded and processed in lexical order.
 Files without absolute paths are assumed to be in
 \fI~/.ssh\fP
 if included in a user configuration file or
@@ -1039,6 +1099,7 @@ Accepted values are
 \fBcs6\fP,
 \fBcs7\fP,
 \fBef\fP,
+\fBle\fP,
 \fBlowdelay\fP,
 \fBthroughput\fP,
 \fBreliability\fP,
@@ -1079,14 +1140,18 @@ and
 \fBKexAlgorithms\fP
 Specifies the available KEX (Key Exchange) algorithms.
 Multiple algorithms must be comma-separated.
-Alternately if the specified value begins with a
+If the specified list begins with a
 `+'
 character, then the specified methods will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified methods (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified methods will be placed at the head of the
+default set.
 The default is:
 
 curve25519-sha256,curve25519-sha256@libssh.org,
@@ -1099,9 +1164,7 @@ diffie-hellman-group16-sha512,
 .br
 diffie-hellman-group18-sha512,
 .br
-diffie-hellman-group14-sha256,
-.br
-diffie-hellman-group14-sha1
+diffie-hellman-group14-sha256
 .br
 
 The list of available key exchange algorithms may also be obtained using
@@ -1131,10 +1194,13 @@ has been enabled.
 \fBLocalForward\fP
 Specifies that a TCP port on the local machine be forwarded over
 the secure channel to the specified host and port from the remote machine.
-The first argument must be
+The first argument specifies the listener and may be
 [\fIbind_address\fP:]\fIport\fP
-and the second argument must be
-\fIhost\fP :\fIhostport\fP.
+or a Unix domain socket path.
+The second argument is the destination and may be
+\fIhost\fP :\fIhostport\fP
+or a Unix domain socket path if the remote host supports it.
+
 IPv6 addresses can be specified by enclosing addresses in square brackets.
 Multiple forwardings may be specified, and additional forwardings can be
 given on the command line.
@@ -1153,6 +1219,11 @@ indicates that the listening port be bound for local use only, while an
 empty address or
 `*'
 indicates that the port should be available from all interfaces.
+Unix domain socket paths may use the tokens described in the
+.B TOKENS
+section and environment variables as described in the
+.B ENVIRONMENT VARIABLES
+section.
 .TP
 \fBLogLevel\fP
 Gives the verbosity level that is used when logging messages from
@@ -1168,14 +1239,18 @@ Specifies the MAC (message authentication code) algorithms
 in order of preference.
 The MAC algorithm is used for data integrity protection.
 Multiple algorithms must be comma-separated.
-If the specified value begins with a
+If the specified list begins with a
 `+'
 character, then the specified algorithms will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified algorithms (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified algorithms will be placed at the head of the
+default set.
 
 The algorithms that contain
 Qq -etm
@@ -1279,8 +1354,8 @@ server running on some machine, or execute
 \fBsshd -i\fP
 somewhere.
 Host key management will be done using the
-HostName of the host being connected (defaulting to the name typed by
-the user).
+\fBHostname\fP
+of the host being connected (defaulting to the name typed by the user).
 Setting the command to
 \fBnone\fP
 disables this option entirely.
@@ -1335,14 +1410,18 @@ The default is
 \fBPubkeyAcceptedKeyTypes\fP
 Specifies the key types that will be used for public key authentication
 as a comma-separated list of patterns.
-Alternately if the specified value begins with a
+If the specified list begins with a
 `+'
 character, then the key types after it will be appended to the default
 instead of replacing it.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified key types (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified key types will be placed at the head of the
+default set.
 The default for this option is:
 
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
@@ -1351,19 +1430,29 @@ ecdsa-sha2-nistp384-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
 .br
+sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+.br
 ssh-ed25519-cert-v01@openssh.com,
 .br
-rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,
+sk-ssh-ed25519-cert-v01@openssh.com,
+.br
+rsa-sha2-512-cert-v01@openssh.com,
+.br
+rsa-sha2-256-cert-v01@openssh.com,
 .br
 ssh-rsa-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
-ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
+sk-ecdsa-sha2-nistp256@openssh.com,
+.br
+ssh-ed25519,sk-ssh-ed25519@openssh.com,
+.br
+rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
 
 The list of available key types may also be obtained using
-Qq ssh -Q key .
+Qq ssh -Q PubkeyAcceptedKeyTypes .
 .TP
 \fBPubkeyAuthentication\fP
 Specifies whether to try public key authentication.
@@ -1389,9 +1478,7 @@ and
 `4G',
 depending on the cipher.
 The optional second value is specified in seconds and may use any of the
-units documented in the
-.B TIME FORMATS
-section of
+units documented in the TIME FORMATS section of
 \fBsshd_config\fP(5).
 The default value for
 \fBRekeyLimit\fP
@@ -1417,10 +1504,12 @@ the secure channel.
 The remote port may either be forwarded to a specified host and port
 from the local machine, or may act as a SOCKS 4/5 proxy that allows a remote
 client to connect to arbitrary destinations from the local machine.
-The first argument must be
+The first argument is the listening specification and may be
 [\fIbind_address\fP:]\fIport\fP
+or, if the remote host supports it, a Unix domain socket path.
 If forwarding to a specific destination then the second argument must be
-\fIhost\fP :\fIhostport\fP,
+\fIhost\fP :\fIhostport\fP
+or a Unix domain socket path,
 otherwise if no destination argument is specified then the remote forwarding
 will be established as a SOCKS proxy.
 
@@ -1429,6 +1518,11 @@ Multiple forwardings may be specified, and additional
 forwardings can be given on the command line.
 Privileged ports can be forwarded only when
 logging in as root on the remote machine.
+Unix domain socket paths may use the tokens described in the
+.B TOKENS
+section and environment variables as described in the
+.B ENVIRONMENT VARIABLES
+section.
 
 If the
 \fIport\fP
@@ -1481,6 +1575,16 @@ an OpenSSH Key Revocation List (KRL) as generated by
 For more information on KRLs, see the KEY REVOCATION LISTS section in
 \fBssh-keygen\fP(1).
 .TP
+\fBSecurityKeyProvider\fP
+Specifies a path to a library that will be used when loading any
+FIDO authenticator-hosted keys, overriding the default of using
+the built-in USB HID support.
+
+If the specified value begins with a
+`$'
+character, then it will be treated as an environment variable containing
+the path to the library.
+.TP
 \fBSendEnv\fP
 Specifies what variables from the local
 \fBenviron\fP(7)
@@ -1529,7 +1633,7 @@ The TCP keepalive option enabled by
 \fBTCPKeepAlive\fP
 is spoofable.
 The server alive mechanism is valuable when the client or
-server depend on knowing when a connection has become inactive.
+server depend on knowing when a connection has become unresponsive.
 
 The default value is 3.
 If, for example,
@@ -1592,7 +1696,7 @@ will never automatically add host keys to the
 file, and refuses to connect to hosts whose host key has changed.
 This provides maximum protection against man-in-the-middle (MITM) attacks,
 though it can be annoying when the
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts\fP
+\fI/system/etc/ssh/ssh_known_hosts\fP
 file is poorly maintained or when connections to new hosts are
 frequently made.
 This option forces the user to manually
@@ -1695,13 +1799,22 @@ after authentication has completed and add them to
 The argument must be
 \fByes\fP,
 \fBno\fP
-(the default) or
+or
 \fBask\fP.
-Enabling this option allows learning alternate hostkeys for a server
+This option allows learning alternate hostkeys for a server
 and supports graceful key rotation by allowing a server to send replacement
 public keys before old ones are removed.
 Additional hostkeys are only accepted if the key used to authenticate the
 host was already trusted or explicitly accepted by the user.
+
+\fBUpdateHostKeys\fP
+is enabled by default if the user has not overridden the default
+\fBUserKnownHostsFile\fP
+setting, otherwise
+\fBUpdateHostKeys\fP
+will be set to
+\fBask\fP.
+
 If
 \fBUpdateHostKeys\fP
 is set to
@@ -1726,6 +1839,12 @@ having to remember to give the user name on the command line.
 \fBUserKnownHostsFile\fP
 Specifies one or more files to use for the user
 host key database, separated by whitespace.
+Each filename may use tilde notation to refer to the user's home directory,
+the tokens described in the
+.B TOKENS
+section and environment variables as described in the
+.B ENVIRONMENT VARIABLES
+section.
 The default is
 \fI~/.ssh/known_hosts\fP,
 \fI~/.ssh/known_hosts2\fP.
@@ -1770,7 +1889,7 @@ Specifies the full pathname of the
 \fBxauth\fP(1)
 program.
 The default is
-\fI/data/data/com.termux/files/usr/bin/xauth\fP.
+\fI/system/bin/xauth\fP.
 .PP
 .SH PATTERNS
 A
@@ -1840,6 +1959,10 @@ The remote hostname.
 %i
 The local user ID.
 .TP
+%k
+The host key alias if specified, otherwise the orignal remote hostname given
+on the command line.
+.TP
 %L
 The local hostname.
 .TP
@@ -1869,31 +1992,49 @@ otherwise.
 The local username.
 .PP
 
-\fBMatch\fP exec
-accepts the tokens %%, %h, %i, %L, %l, %n, %p, %r, and %u.
+\fBCertificateFile\fP,
+\fBControlPath\fP,
+\fBIdentityAgent\fP,
+\fBIdentityFile\fP,
+\fBLocalForward\fP,
+\fBMatch\fP exec ,
+\fBRemoteCommand\fP,
+\fBRemoteForward\fP,
+and
+\fBUserKnownHostsFile\fP
+accept the tokens %%, %C, %d, %h, %i, %L, %l, %n, %p, %r, and %u.
 
-\fBCertificateFile\fP
-accepts the tokens %%, %d, %h, %i, %l, %r, and %u.
-
-\fBControlPath\fP
-accepts the tokens %%, %C, %h, %i, %L, %l, %n, %p, %r, and %u.
-
-\fBHostName\fP
+\fBHostname\fP
 accepts the tokens %% and %h.
 
-\fBIdentityAgent\fP
-and
-\fBIdentityFile\fP
-accept the tokens %%, %d, %h, %i, %l, %r, and %u.
-
 \fBLocalCommand\fP
-accepts the tokens %%, %C, %d, %h, %i, %l, %n, %p, %r, %T, and %u.
+accepts all tokens.
 
 \fBProxyCommand\fP
-accepts the tokens %%, %h, %p, and %r.
+accepts the tokens %%, %h, %n, %p, and %r.
+.SH ENVIRONMENT VARIABLES
+Arguments to some keywords can be expanded at runtime from environment
+variables on the client by enclosing them in
+\fB${}\fP,
+for example
+\fB${HOME}/.ssh\fP
+would refer to the user's .ssh directory.
+If a specified environment variable does not exist then an error will be
+returned and the setting for that keyword will be ignored.
 
-\fBRemoteCommand\fP
-accepts the tokens %%, %C, %d, %h, %i, %l, %n, %p, %r, and %u.
+The keywords
+\fBCertificateFile\fP,
+\fBControlPath\fP,
+\fBIdentityAgent\fP,
+\fBIdentityFile\fP
+and
+\fBUserKnownHostsFile\fP
+support environment variables.
+The keywords
+\fBLocalForward\fP
+and
+\fBRemoteForward\fP
+support environment variables only for Unix domain socket paths.
 .SH FILES
 .TP
 .B ~/.ssh/config
@@ -1903,7 +2044,7 @@ This file is used by the SSH client.
 Because of the potential for abuse, this file must have strict permissions:
 read/write for the user, and not writable by others.
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/ssh_config
+.B /system/etc/ssh/ssh_config
 Systemwide configuration file.
 This file provides defaults for those
 values that are not specified in the user's configuration file, and

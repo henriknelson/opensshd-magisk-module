@@ -1,11 +1,11 @@
-.TH SFTP 1 "January 22 2019 " ""
+.TH SFTP 1 "August 3 2020 " ""
 .SH NAME
 \fBsftp\fP
-\- secure file transfer program
+\- OpenSSH secure file transfer
 .SH SYNOPSIS
 .br
 \fBsftp\fP
-[\fB\-46aCfpqrv\fP]
+[\fB\-46AaCfNpqrv\fP]
 [\fB\-B\fP \fIbuffer_size\fP]
 [\fB\-b\fP \fIbatchfile\fP]
 [\fB\-c\fP \fIcipher\fP]
@@ -76,6 +76,12 @@ to use IPv4 addresses only.
 Forces
 \fBsftp\fP
 to use IPv6 addresses only.
+.TP
+\fB\-A\fP
+Allows forwarding of
+\fBssh-agent\fP(1)
+to the remote system.
+The default is not to forward an authentication agent.
 .TP
 \fB\-a\fP
 Attempt to continue interrupted transfers rather than overwriting
@@ -181,6 +187,11 @@ This option is directly passed to
 \fB\-l\fP \fIlimit\fP
 Limits the used bandwidth, specified in Kbit/s.
 .TP
+\fB\-N\fP
+Disables quiet mode, e.g. to override the implicit quiet mode set by the
+\fB\-b\fP
+flag.
+.TP
 \fB\-o\fP \fIssh_option\fP
 Can be used to pass options to
 \fBssh\fP
@@ -254,7 +265,7 @@ HostKeyAlgorithms
 .TP
 HostKeyAlias
 .TP
-HostName
+Hostname
 .TP
 IdentitiesOnly
 .TP
@@ -444,7 +455,7 @@ extension.
 Quit
 \fBsftp\fP.
 .TP
-\fBget\fP [\fB\-afPpr\fP] \fIremote-path\fP [\fIlocal-path\fP] 
+\fBget\fP [\fB\-afpR\fP] \fIremote-path\fP [\fIlocal-path\fP] 
 Retrieve the
 \fIremote-path\fP
 and store it on the local machine.
@@ -476,15 +487,13 @@ flag is specified, then
 will be called after the file transfer has completed to flush the file
 to disk.
 
-If either the
-\fB\-P\fP
-or
+If the
 \fB\-p\fP
 flag is specified, then full file permissions and access times are
 copied too.
 
 If the
-\fB\-r\fP
+\fB\-R\fP
 flag is specified then directories will be copied recursively.
 Note that
 \fBsftp\fP
@@ -592,7 +601,7 @@ Create remote directory specified by
 \fBprogress\fP
 Toggle display of progress meter.
 .TP
-\fBput\fP [\fB\-afPpr\fP] \fIlocal-path\fP [\fIremote-path\fP] 
+\fBput\fP [\fB\-afpR\fP] \fIlocal-path\fP [\fIremote-path\fP] 
 Upload
 \fIlocal-path\fP
 and store it on the remote machine.
@@ -625,15 +634,13 @@ after the file has been transferred.
 Note that this is only supported by servers that implement
 the "fsync@openssh.com" extension.
 
-If either the
-\fB\-P\fP
-or
+If the
 \fB\-p\fP
 flag is specified, then full file permissions and access times are
 copied too.
 
 If the
-\fB\-r\fP
+\fB\-R\fP
 flag is specified then directories will be copied recursively.
 Note that
 \fBsftp\fP
@@ -646,7 +653,7 @@ Display remote working directory.
 Quit
 \fBsftp\fP.
 .TP
-\fBreget\fP [\fB\-Ppr\fP] \fIremote-path\fP [\fIlocal-path\fP] 
+\fBreget\fP [\fB\-fpR\fP] \fIremote-path\fP [\fIlocal-path\fP] 
 Resume download of
 \fIremote-path\fP.
 Equivalent to
@@ -655,16 +662,16 @@ with the
 \fB\-a\fP
 flag set.
 .TP
-\fBreput\fP [\fB\-Ppr\fP] [\fIlocal-path\fP] \fIremote-path\fP 
+\fBreput\fP [\fB\-fpR\fP] \fIlocal-path\fP [\fIremote-path\fP] 
 Resume upload of
-[\fIlocal-path\fP.]
+\fIlocal-path\fP.
 Equivalent to
 \fBput\fP
 with the
 \fB\-a\fP
 flag set.
 .TP
-\fBrename \fIoldpath\fP \fInewpath\fP\fP
+\fBrename \fIoldpath\fP newpath\fP
 Rename remote file from
 \fIoldpath\fP
 to
@@ -678,7 +685,7 @@ Delete remote file specified by
 Remove remote directory specified by
 \fIpath\fP.
 .TP
-\fBsymlink \fIoldpath\fP \fInewpath\fP\fP
+\fBsymlink \fIoldpath\fP newpath\fP
 Create a symbolic link from
 \fIoldpath\fP
 to

@@ -1,7 +1,7 @@
-.TH SSH-KEYSCAN 1 "March 5 2018 " ""
+.TH SSH-KEYSCAN 1 "November 30 2019 " ""
 .SH NAME
 \fBssh-keyscan\fP
-\- gather SSH public keys
+\- gather SSH public keys from servers
 .SH SYNOPSIS
 .br
 \fBssh-keyscan\fP
@@ -127,7 +127,7 @@ On the other hand, if the security model allows such a risk,
 can help in the detection of tampered keyfiles or man in the middle
 attacks which have begun after the ssh_known_hosts file was created.
 .SH FILES
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_known_hosts\fP
+\fI/system/etc/ssh/ssh_known_hosts\fP
 .SH EXAMPLES
 Print the RSA host key for machine
 \fIhostname\fP :

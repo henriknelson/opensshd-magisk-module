@@ -1,11 +1,11 @@
-.TH SSHD_CONFIG 5 "March 22 2019 " ""
+.TH SSHD_CONFIG 5 "August 27 2020 " ""
 .SH NAME
 \fBsshd_config\fP
-\- OpenSSH SSH daemon configuration file
+\- OpenSSH daemon configuration file
 .SH DESCRIPTION
 \fBsshd\fP(8)
 reads configuration data from
-\fI/data/data/com.termux/files/usr/etc/ssh/sshd_config\fP
+\fI/system/etc/ssh/sshd_config\fP
 (or the file specified with
 \fB\-f\fP
 on the command line).
@@ -78,11 +78,8 @@ If specified, login is allowed only for users whose primary
 group or supplementary group list matches one of the patterns.
 Only group names are valid; a numerical group ID is not recognized.
 By default, login is allowed for all groups.
-The allow/deny directives are processed in the following order:
-\fBDenyUsers\fP,
-\fBAllowUsers\fP,
+The allow/deny groups directives are processed in the following order:
 \fBDenyGroups\fP,
-and finally
 \fBAllowGroups\fP.
 
 See PATTERNS in
@@ -141,12 +138,9 @@ are separately checked, restricting logins to particular
 users from particular hosts.
 HOST criteria may additionally contain addresses to match in CIDR
 address/masklen format.
-The allow/deny directives are processed in the following order:
+The allow/deny users directives are processed in the following order:
 \fBDenyUsers\fP,
-\fBAllowUsers\fP,
-\fBDenyGroups\fP,
-and finally
-\fBAllowGroups\fP.
+\fBAllowUsers\fP.
 
 See PATTERNS in
 \fBssh_config\fP(5)
@@ -223,12 +217,10 @@ more lines of authorized_keys output (see
 .B AUTHORIZED_KEYS
 in
 \fBsshd\fP(8)) .
-If a key supplied by
 \fBAuthorizedKeysCommand\fP
-does not successfully authenticate
-and authorize the user then public key authentication continues using the usual
+is tried after the usual
 \fBAuthorizedKeysFile\fP
-files.
+files and will not be executed if a matching key is found there.
 By default, no
 \fBAuthorizedKeysCommand\fP
 is run.
@@ -249,9 +241,7 @@ will refuse to start.
 .TP
 \fBAuthorizedKeysFile\fP
 Specifies the file that contains the public keys used for user authentication.
-The format is described in the
-.B AUTHORIZED_KEYS FILE FORMAT
-section of
+The format is described in the AUTHORIZED_KEYS FILE FORMAT section of
 \fBsshd\fP(8).
 Arguments to
 \fBAuthorizedKeysFile\fP
@@ -364,7 +354,7 @@ Specifies which algorithms are allowed for signing of certificates
 by certificate authorities (CAs).
 The default is:
 
-ecdsa-sha2-nistp256.ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
+ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
 ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
@@ -437,14 +427,18 @@ indicating not to
 \fBCiphers\fP
 Specifies the ciphers allowed.
 Multiple ciphers must be comma-separated.
-If the specified value begins with a
+If the specified list begins with a
 `+'
 character, then the specified ciphers will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified ciphers (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified ciphers will be placed at the head of the
+default set.
 
 The supported ciphers are:
 
@@ -496,7 +490,7 @@ The TCP keepalive option enabled by
 \fBTCPKeepAlive\fP
 is spoofable.
 The client alive mechanism is valuable when the client or
-server depend on knowing when a connection has become inactive.
+server depend on knowing when a connection has become unresponsive.
 
 The default value is 3.
 If
@@ -505,6 +499,9 @@ is set to 15, and
 \fBClientAliveCountMax\fP
 is left at the default, unresponsive SSH clients
 will be disconnected after approximately 45 seconds.
+Setting a zero
+\fBClientAliveCountMax\fP
+disables connection termination.
 .TP
 \fBClientAliveInterval\fP
 Sets a timeout interval in seconds after which if no data has been received
@@ -535,11 +532,8 @@ Login is disallowed for users whose primary group or supplementary
 group list matches one of the patterns.
 Only group names are valid; a numerical group ID is not recognized.
 By default, login is allowed for all groups.
-The allow/deny directives are processed in the following order:
-\fBDenyUsers\fP,
-\fBAllowUsers\fP,
+The allow/deny groups directives are processed in the following order:
 \fBDenyGroups\fP,
-and finally
 \fBAllowGroups\fP.
 
 See PATTERNS in
@@ -557,12 +551,9 @@ are separately checked, restricting logins to particular
 users from particular hosts.
 HOST criteria may additionally contain addresses to match in CIDR
 address/masklen format.
-The allow/deny directives are processed in the following order:
+The allow/deny users directives are processed in the following order:
 \fBDenyUsers\fP,
-\fBAllowUsers\fP,
-\fBDenyGroups\fP,
-and finally
-\fBAllowGroups\fP.
+\fBAllowUsers\fP.
 
 See PATTERNS in
 \fBssh_config\fP(5)
@@ -665,14 +656,18 @@ The default is
 \fBHostbasedAcceptedKeyTypes\fP
 Specifies the key types that will be accepted for hostbased authentication
 as a list of comma-separated patterns.
-Alternately if the specified value begins with a
+Alternately if the specified list begins with a
 `+'
 character, then the specified key types will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified key types (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified key types will be placed at the head of the
+default set.
 The default for this option is:
 
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
@@ -681,19 +676,29 @@ ecdsa-sha2-nistp384-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
 .br
+sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+.br
 ssh-ed25519-cert-v01@openssh.com,
 .br
-rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,
+sk-ssh-ed25519-cert-v01@openssh.com,
+.br
+rsa-sha2-512-cert-v01@openssh.com,
+.br
+rsa-sha2-256-cert-v01@openssh.com,
 .br
 ssh-rsa-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
-ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
+sk-ecdsa-sha2-nistp256@openssh.com,
+.br
+ssh-ed25519,sk-ssh-ed25519@openssh.com,
+.br
+rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
 
 The list of available key types may also be obtained using
-Qq ssh -Q key .
+Qq ssh -Q HostbasedAcceptedKeyTypes .
 .TP
 \fBHostbasedAuthentication\fP
 Specifies whether rhosts or /etc/hosts.equiv authentication together
@@ -733,10 +738,10 @@ is not to load any certificates.
 Specifies a file containing a private host key
 used by SSH.
 The defaults are
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_ecdsa_key\fP,
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_ed25519_key\fP
+\fI/system/etc/ssh/ssh_host_ecdsa_key\fP,
+\fI/system/etc/ssh/ssh_host_ed25519_key\fP
 and
-\fI/data/data/com.termux/files/usr/etc/ssh/ssh_host_rsa_key\fP.
+\fI/system/etc/ssh/ssh_host_rsa_key\fP.
 
 Note that
 \fBsshd\fP(8)
@@ -772,34 +777,57 @@ ecdsa-sha2-nistp384-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
 .br
+sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+.br
 ssh-ed25519-cert-v01@openssh.com,
 .br
-rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,
+sk-ssh-ed25519-cert-v01@openssh.com,
+.br
+rsa-sha2-512-cert-v01@openssh.com,
+.br
+rsa-sha2-256-cert-v01@openssh.com,
 .br
 ssh-rsa-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
-ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
+sk-ecdsa-sha2-nistp256@openssh.com,
+.br
+ssh-ed25519,sk-ssh-ed25519@openssh.com,
+.br
+rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
 
 The list of available key types may also be obtained using
-Qq ssh -Q key .
+Qq ssh -Q HostKeyAlgorithms .
 .TP
 \fBIgnoreRhosts\fP
-Specifies that
+Specifies whether to ignore per-user
 \fI\&.rhosts\fP
 and
 \fI\&.shosts\fP
-files will not be used in
+files during
 \fBHostbasedAuthentication\fP.
-
+The system-wide
 \fI/etc/hosts.equiv\fP
 and
-\fI/data/data/com.termux/files/usr/etc/ssh/shosts.equiv\fP
-are still used.
-The default is
-\fByes\fP.
+\fI/system/etc/ssh/shosts.equiv\fP
+are still used regardless of this setting.
+
+Accepted values are
+\fByes\fP
+(the default) to ignore all per-user files,
+\fBshosts-only\fP
+to allow the use of
+\fI\&.shosts\fP
+but to ignore
+\fI\&.rhosts\fP
+or
+\fBno\fP
+to allow both
+\fI\&.shosts\fP
+and
+\fIrhosts\fP.
 .TP
 \fBIgnoreUserKnownHosts\fP
 Specifies whether
@@ -811,7 +839,21 @@ during
 and use only the system-wide known hosts file
 \fI/etc/ssh/known_hosts\fP.
 The default is
-\fBno\fP.
+``no''.
+.TP
+\fBInclude\fP
+Include the specified configuration file(s).
+Multiple pathnames may be specified and each pathname may contain
+\fBglob\fP(7)
+wildcards that will be expanded and processed in lexical order.
+Files without absolute paths are assumed to be in
+\fI/etc/ssh\fP.
+An
+\fBInclude\fP
+directive may appear inside a
+\fBMatch\fP
+block
+to perform conditional inclusion.
 .TP
 \fBIPQoS\fP
 Specifies the IPv4 type-of-service or DSCP class for the connection.
@@ -837,6 +879,7 @@ Accepted values are
 \fBcs6\fP,
 \fBcs7\fP,
 \fBef\fP,
+\fBle\fP,
 \fBlowdelay\fP,
 \fBthroughput\fP,
 \fBreliability\fP,
@@ -899,14 +942,18 @@ The default is
 \fBKexAlgorithms\fP
 Specifies the available KEX (Key Exchange) algorithms.
 Multiple algorithms must be comma-separated.
-Alternately if the specified value begins with a
+Alternately if the specified list begins with a
 `+'
 character, then the specified methods will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified methods (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified methods will be placed at the head of the
+default set.
 The supported algorithms are:
 
 .IP
@@ -933,6 +980,8 @@ ecdh-sha2-nistp256
 ecdh-sha2-nistp384
 .IP
 ecdh-sha2-nistp521
+.IP
+sntrup4591761x25519-sha512@tinyssh.org
 
 The default is:
 
@@ -944,11 +993,11 @@ diffie-hellman-group-exchange-sha256,
 .br
 diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,
 .br
-diffie-hellman-group14-sha256,diffie-hellman-group14-sha1
+diffie-hellman-group14-sha256
 .br
 
 The list of available key exchange algorithms may also be obtained using
-Qq ssh -Q kex .
+Qq ssh -Q KexAlgorithms .
 .TP
 \fBListenAddress\fP
 Specifies the local addresses
@@ -1012,14 +1061,18 @@ Logging with a DEBUG level violates the privacy of users and is not recommended.
 Specifies the available MAC (message authentication code) algorithms.
 The MAC algorithm is used for data integrity protection.
 Multiple algorithms must be comma-separated.
-If the specified value begins with a
+If the specified list begins with a
 `+'
 character, then the specified algorithms will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified algorithms (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified algorithms will be placed at the head of the
+default set.
 
 The algorithms that contain
 Qq -etm
@@ -1154,6 +1207,8 @@ Available keywords are
 \fBHostbasedAcceptedKeyTypes\fP,
 \fBHostbasedAuthentication\fP,
 \fBHostbasedUsesNameFromPacketOnly\fP,
+\fBIgnoreRhosts\fP,
+\fBInclude\fP,
 \fBIPQoS\fP,
 \fBKbdInteractiveAuthentication\fP,
 \fBKerberosAuthentication\fP,
@@ -1180,7 +1235,7 @@ Available keywords are
 \fBX11DisplayOffset\fP,
 \fBX11Forwarding\fP
 and
-\fBX11UseLocalHost\fP.
+\fBX11UseLocalhost\fP.
 .TP
 \fBMaxAuthTries\fP
 Specifies the maximum number of authentication attempts permitted per
@@ -1289,7 +1344,9 @@ An argument of
 can be used to prohibit all forwarding requests.
 The wildcard
 `*'
-can be used for host or port to allow all hosts or ports, respectively.
+can be used for host or port to allow all hosts or ports respectively.
+Otherwise, no pattern matching or address lookups are performed on supplied
+names.
 By default all port forwarding requests are permitted.
 .TP
 \fBPermitRootLogin\fP
@@ -1389,7 +1446,7 @@ SSH daemon, or
 \fBnone\fP
 to not write one.
 The default is
-\fI/data/data/com.termux/files/usr/var/run/sshd.pid\fP.
+\fI/system/var/run/sshd.pid\fP.
 .TP
 \fBPort\fP
 Specifies the port number that
@@ -1423,14 +1480,18 @@ The default is
 \fBPubkeyAcceptedKeyTypes\fP
 Specifies the key types that will be accepted for public key authentication
 as a list of comma-separated patterns.
-Alternately if the specified value begins with a
+Alternately if the specified list begins with a
 `+'
 character, then the specified key types will be appended to the default set
 instead of replacing them.
-If the specified value begins with a
+If the specified list begins with a
 `-'
 character, then the specified key types (including wildcards) will be removed
 from the default set instead of replacing them.
+If the specified list begins with a
+`^'
+character, then the specified key types will be placed at the head of the
+default set.
 The default for this option is:
 
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
@@ -1439,19 +1500,65 @@ ecdsa-sha2-nistp384-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
 .br
+sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
+.br
 ssh-ed25519-cert-v01@openssh.com,
 .br
-rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,
+sk-ssh-ed25519-cert-v01@openssh.com,
+.br
+rsa-sha2-512-cert-v01@openssh.com,
+.br
+rsa-sha2-256-cert-v01@openssh.com,
 .br
 ssh-rsa-cert-v01@openssh.com,
 .br
 ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 .br
-ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa
+sk-ecdsa-sha2-nistp256@openssh.com,
+.br
+ssh-ed25519,sk-ssh-ed25519@openssh.com,
+.br
+rsa-sha2-512,rsa-sha2-256,ssh-rsa
 .br
 
 The list of available key types may also be obtained using
-Qq ssh -Q key .
+Qq ssh -Q PubkeyAcceptedKeyTypes .
+.TP
+\fBPubkeyAuthOptions\fP
+Sets one or more public key authentication options.
+The supported keywords are:
+\fBnone\fP
+(the default; indicating no additional options are enabled),
+\fBtouch-required\fP
+and
+\fBverify-required\fP.
+
+The
+\fBtouch-required\fP
+option causes public key authentication using a FIDO authenticator algorithm
+(i.e.\&
+\fBecdsa-sk\fP
+or
+\fBed25519-sk\fP)
+to always require the signature to attest that a physically present user
+explicitly confirmed the authentication (usually by touching the authenticator).
+By default,
+\fBsshd\fP(8)
+requires user presence unless overridden with an authorized_keys option.
+The
+\fBtouch-required\fP
+flag disables this override.
+
+The
+\fBverify-required\fP
+option requires a FIDO key signature attest that the user was verified,
+e.g. via a PIN.
+
+Neither the
+\fBtouch-required\fP
+or
+\fBverify-required\fP
+options have any effect for other, non-FIDO, public key types.
 .TP
 \fBPubkeyAuthentication\fP
 Specifies whether public key authentication is allowed.
@@ -1506,6 +1613,11 @@ will be bound to this
 If the routing domain is set to
 \fB\&%D\fP,
 then the domain in which the incoming connection was received will be applied.
+.TP
+\fBSecurityKeyProvider\fP
+Specifies a path to a library that will be used when loading
+FIDO authenticator-hosted keys, overriding the default of using
+the built-in USB HID support.
 .TP
 \fBSetEnv\fP
 Specifies one or more environment variables to set in child sessions started
@@ -1750,7 +1862,7 @@ program, or
 \fBnone\fP
 to not use one.
 The default is
-\fI/data/data/com.termux/files/usr/bin/xauth\fP.
+\fI/system/bin/xauth\fP.
 .SH TIME FORMATS
 \fBsshd\fP(8)
 command-line arguments and configuration file options that specify time
@@ -1859,7 +1971,7 @@ accepts the tokens %%, %h, %U, and %u.
 accepts the token %D.
 .SH FILES
 .TP
-.B /data/data/com.termux/files/usr/etc/ssh/sshd_config
+.B /system/etc/ssh/sshd_config
 Contains configuration data for
 \fBsshd\fP(8).
 This file should be writable by root only, but it is recommended

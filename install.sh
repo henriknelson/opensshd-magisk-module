@@ -124,7 +124,7 @@ REPLACE="
 print_modname() {
   ui_print "*********************************************"
   ui_print "     OpenSSH for Android                     "
-  ui_print "         - v 8.2p1                           "
+  ui_print "         - v 8.4p1                           "
   ui_print "         - built by nelshh @ xda-developers  "
   ui_print "*********************************************"
 }

@@ -1,7 +1,7 @@
-.TH SFTP-SERVER 8 "December 11 2014 " ""
+.TH SFTP-SERVER 8 "June 22 2020 " ""
 .SH NAME
 \fBsftp-server\fP
-\- SFTP server subsystem
+\- OpenSSH SFTP server subsystem
 .SH SYNOPSIS
 .br
 \fBsftp-server\fP
@@ -9,8 +9,8 @@
 [\fB\-d\fP \fIstart_directory\fP]
 [\fB\-f\fP \fIlog_facility\fP]
 [\fB\-l\fP \fIlog_level\fP]
-[\fB\-P\fP \fIblacklisted_requests\fP]
-[\fB\-p\fP \fIwhitelisted_requests\fP]
+[\fB\-P\fP \fIdenied_requests\fP]
+[\fB\-p\fP \fIallowed_requests\fP]
 [\fB\-u\fP \fIumask\fP]
 .br
 \fBsftp-server\fP
@@ -78,21 +78,21 @@ DEBUG and DEBUG1 are equivalent.
 DEBUG2 and DEBUG3 each specify higher levels of debugging output.
 The default is ERROR.
 .TP
-\fB\-P\fP \fIblacklisted_requests\fP
+\fB\-P\fP \fIdenied_requests\fP
 Specify a comma-separated list of SFTP protocol requests that are banned by
 the server.
 \fBsftp-server\fP
-will reply to any blacklisted request with a failure.
+will reply to any denied request with a failure.
 The
 \fB\-Q\fP
 flag can be used to determine the supported request types.
-If both a blacklist and a whitelist are specified, then the blacklist is
-applied before the whitelist.
+If both denied and allowed lists are specified, then the denied list is
+applied before the allowed list.
 .TP
-\fB\-p\fP \fIwhitelisted_requests\fP
+\fB\-p\fP \fIallowed_requests\fP
 Specify a comma-separated list of SFTP protocol requests that are permitted
 by the server.
-All request types that are not on the whitelist will be logged and replied
+All request types that are not on the allowed list will be logged and replied
 to with a failure message.
 
 Care must be taken when using this feature to ensure that requests made
@@ -103,7 +103,7 @@ Query protocol features supported by
 \fB.\fP
 At present the only feature that may be queried is
 ``requests'',
-which may be used for black or whitelisting (flags
+which may be used to deny or allow specific requests (flags
 \fB\-P\fP
 and
 \fB\-p\fP

@@ -1,12 +1,13 @@
-.TH SSH-ADD 1 "January 21 2019 " ""
+.TH SSH-ADD 1 "July 14 2020 " ""
 .SH NAME
 \fBssh-add\fP
-\- adds private key identities to the authentication agent
+\- adds private key identities to the OpenSSH authentication agent
 .SH SYNOPSIS
 .br
 \fBssh-add\fP
-[\fB\-cDdkLlqvXx\fP]
+[\fB\-cDdKkLlqvXx\fP]
 [\fB\-E\fP \fIfingerprint_hash\fP]
+[\fB\-S\fP \fIprovider\fP]
 [\fB\-t\fP \fIlife\fP]
 [\fIfile ...\fP]
 .br
@@ -27,8 +28,10 @@ When run without arguments, it adds the files
 \fI~/.ssh/id_rsa\fP,
 \fI~/.ssh/id_dsa\fP,
 \fI~/.ssh/id_ecdsa\fP,
+\fI~/.ssh/id_ecdsa_sk\fP,
+\fI~/.ssh/id_ed25519\fP,
 and
-\fI~/.ssh/id_ed25519\fP.
+\fI~/.ssh/id_ed25519_sk\fP.
 After loading a private key,
 \fBssh-add\fP
 will try to load corresponding certificate information from the
@@ -77,6 +80,11 @@ If no public key is found at a given path,
 will append
 \fI\&.pub\fP
 and retry.
+If the argument list consists of
+``-''
+then
+\fBssh-add\fP
+will read public keys to be removed from standard input.
 .TP
 \fB\-E\fP \fIfingerprint_hash\fP
 Specifies the hash algorithm used when displaying key fingerprints.
@@ -91,6 +99,9 @@ The default is
 Remove keys provided by the PKCS#11 shared library
 \fIpkcs11\fP.
 .TP
+\fB\-K\fP
+Load resident keys from a FIDO authenticator.
+.TP
 \fB\-k\fP
 When loading keys into or deleting keys from the agent, process plain private
 keys only and skip certificates.
@@ -104,6 +115,11 @@ Lists fingerprints of all identities currently represented by the agent.
 .TP
 \fB\-q\fP
 Be quiet after a successful operation.
+.TP
+\fB\-S\fP \fIprovider\fP
+Specifies a path to a library that will be used when adding
+FIDO authenticator-hosted keys, overriding the default of using the
+internal USB HID support.
 .TP
 \fB\-s\fP \fIpkcs11\fP
 Add keys provided by the PKCS#11 shared library
@@ -139,7 +155,7 @@ Lock the agent with a password.
 .PP
 .SH ENVIRONMENT
 .TP
-.B "DISPLAY" and "SSH_ASKPASS"
+.B "DISPLAY", "SSH_ASKPASS" and "SSH_ASKPASS_REQUIRE"
 If
 \fBssh-add\fP
 needs a passphrase, it will read the passphrase from the current
@@ -160,29 +176,52 @@ This is particularly useful when calling
 from a
 \fI\&.xsession\fP
 or related script.
-(Note that on some machines it
-may be necessary to redirect the input from
-\fI/dev/null\fP
-to make this work.)
+
+.IR SSH_ASKPASS_REQUIRE
+allows further control over the use of an askpass program.
+If this variable is set to
+``never''
+then
+\fBssh-add\fP
+will never attempt to use one.
+If it is set to
+``prefer'',
+then
+\fBssh-add\fP
+will prefer to use the askpass program instead of the TTY when requesting
+passwords.
+Finally, if the variable is set to
+``force'',
+then the askpass program will be used for all passphrase input regardless
+of whether
+.IR DISPLAY
+is set.
 .TP
 .B SSH_AUTH_SOCK
 Identifies the path of a
 UNIX-domain
 socket used to communicate with the agent.
+.TP
+.B SSH_SK_PROVIDER
+Specifies a path to a library that will be used when loading any
+FIDO authenticator-hosted keys, overriding the default of using
+the built-in USB HID support.
 .PP
 .SH FILES
 .TP
 .B ~/.ssh/id_dsa
-Contains the DSA authentication identity of the user.
 .TP
 .B ~/.ssh/id_ecdsa
-Contains the ECDSA authentication identity of the user.
+.TP
+.B ~/.ssh/id_ecdsa_sk
 .TP
 .B ~/.ssh/id_ed25519
-Contains the Ed25519 authentication identity of the user.
+.TP
+.B ~/.ssh/id_ed25519_sk
 .TP
 .B ~/.ssh/id_rsa
-Contains the RSA authentication identity of the user.
+Contains the DSA, ECDSA, authenticator-hosted ECDSA, Ed25519,
+authenticator-hosted Ed25519 or RSA authentication identity of the user.
 .PP
 
 Identity files should not be readable by anyone but the user.
